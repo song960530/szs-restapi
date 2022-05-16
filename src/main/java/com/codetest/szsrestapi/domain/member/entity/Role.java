@@ -1,10 +1,10 @@
 package com.codetest.szsrestapi.domain.member.entity;
 
+import com.codetest.szsrestapi.domain.member.EnumRole;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.annotation.PostConstruct;
 import javax.persistence.*;
 import java.util.List;
 
@@ -26,7 +26,8 @@ public class Role {
     private Long roleNo;
 
     @Column(name = "ROLES")
-    private String roles;
+    @Enumerated(EnumType.STRING)
+    private EnumRole roles;
 
     @ManyToMany
     @JoinTable(
@@ -36,8 +37,7 @@ public class Role {
     )
     private List<Member> members;
 
-    public Role(Long roleNo, String roles) {
-        this.roleNo = roleNo;
+    public Role(EnumRole roles) {
         this.roles = roles;
     }
 }

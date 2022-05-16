@@ -30,8 +30,9 @@ public class JoinRequestDto {
     private Role role;
 
     private String encPassword;
+    private String encRegNo;
 
     public Member toEntity() {
-        return new Member(userId, encPassword, name, regNo, Arrays.asList(role));
+        return new Member(userId, encPassword, name, encRegNo, Arrays.asList(role));
     }
 }

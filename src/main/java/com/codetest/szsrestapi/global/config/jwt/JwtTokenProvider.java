@@ -1,5 +1,6 @@
 package com.codetest.szsrestapi.global.config.jwt;
 
+import com.codetest.szsrestapi.domain.member.EnumRole;
 import com.codetest.szsrestapi.domain.member.entity.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -38,7 +39,7 @@ public class JwtTokenProvider {
 
         Date now = new Date();
         Claims claims = Jwts.claims().setSubject(userPk); // JWT payload에 저장되는 정보단위
-        List<String> roleList = roles.stream().map(Role::getRoles).collect(Collectors.toList());
+        List<EnumRole> roleList = roles.stream().map(Role::getRoles).collect(Collectors.toList());
         claims.put("roles", roleList);
 
         return Jwts.builder()
