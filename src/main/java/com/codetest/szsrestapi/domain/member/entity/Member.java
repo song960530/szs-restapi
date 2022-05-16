@@ -1,6 +1,7 @@
 package com.codetest.szsrestapi.domain.member.entity;
 
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -45,4 +46,12 @@ public class Member {
             , inverseJoinColumns = @JoinColumn(name = "ROLE_NO")
     )
     private List<Role> roles = new ArrayList<>();
+
+    public Member(String userId, String password, String name, String regNo, List<Role> roles) {
+        this.userId = userId;
+        this.password = password;
+        this.name = name;
+        this.regNo = regNo;
+        this.roles = roles;
+    }
 }

@@ -17,6 +17,11 @@ spring:
         format_sql: true
         # use_sql_comments: true
 
+config:
+  jwt:
+    secretKey: szs-restapi
+    validTime: 1800000 # ms
+
 logging.level:
   org.hibernate.SQL: debug
   # org.hibernate.type: trace
