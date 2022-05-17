@@ -23,16 +23,29 @@ public class UserController {
 
     @PostMapping("/szs/signup")
     public ResponseEntity<ResultMessage> signup(@Valid @RequestBody JoinReqDto requestDto) {
-        return new ResponseEntity<>(memberService.signup(requestDto), HttpStatus.OK);
+        memberService.signup(requestDto);
+
+        return new ResponseEntity<>(
+                ResultMessage.of("회원가입", HttpStatus.OK)
+                , HttpStatus.OK
+        );
     }
 
     @PostMapping("/szs/login")
     public ResponseEntity<ResultMessage> login(@Valid @RequestBody LoginReqDto requestDto) {
-        return new ResponseEntity<>(memberService.login(requestDto), HttpStatus.OK);
+
+        return new ResponseEntity<>(
+                ResultMessage.of(memberService.login(requestDto), "로그인", HttpStatus.OK)
+                , HttpStatus.OK
+        );
     }
 
     @GetMapping("/szs/me")
     public ResponseEntity<ResultMessage> whoAmI() {
-        return new ResponseEntity<>(memberService.whoAmI(), HttpStatus.OK);
+
+        return new ResponseEntity<>(
+                ResultMessage.of(memberService.whoAmI(), "내정보", HttpStatus.OK)
+                , HttpStatus.OK
+        );
     }
 }

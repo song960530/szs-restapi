@@ -7,21 +7,21 @@ import org.springframework.http.HttpStatus;
 @Data
 @Builder
 public class ResultMessage {
-    private HttpStatus status;
+    private int status;
     private String message;
     private Object data;
 
     public final static ResultMessage of(final Object data, final HttpStatus status) {
         return ResultMessage.builder()
                 .data(data)
-                .status(status)
+                .status(status.value())
                 .build();
     }
 
     public final static ResultMessage of(final String message, final HttpStatus status) {
         return ResultMessage.builder()
                 .message(message)
-                .status(status)
+                .status(status.value())
                 .build();
     }
 
@@ -29,7 +29,7 @@ public class ResultMessage {
         return ResultMessage.builder()
                 .data(data)
                 .message(message)
-                .status(status)
+                .status(status.value())
                 .build();
     }
 }

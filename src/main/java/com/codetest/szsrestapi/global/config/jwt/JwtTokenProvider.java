@@ -78,12 +78,10 @@ public class JwtTokenProvider {
         String token = request.getHeader(headerName);
 
         if (!StringUtils.hasText(token))
-            // TODO: 예외처리
-            return null;
+            throw new IllegalArgumentException("조회된 토큰값이 없습니다");
 
         if (!Pattern.matches("^Bearer .*", token))
-            // TODO: 예외처리
-            return null;
+            throw new IllegalArgumentException("토큰값이 잘못되었습니다");
 
         return token.replaceAll("^Bearer( )*", "");
     }
@@ -99,13 +97,11 @@ public class JwtTokenProvider {
             String receiveKey = String.valueOf(claims.get("apiKey"));
 
             if (!StringUtils.hasText(receiveKey) || !receiveKey.equals(apiKey))
-                // TODO: 예외처리
-                return false;
+                throw new IllegalArgumentException("정상적인 API 키가 아닙니다");
 
             // 만료됐으면 true, 아니면 false
             if (claims.getExpiration().before(new Date()))
-                // TODO: 예외처리
-                return false;
+                throw new IllegalStateException("만료된 토큰입니다");
 
             return true;
         } catch (Exception e) {

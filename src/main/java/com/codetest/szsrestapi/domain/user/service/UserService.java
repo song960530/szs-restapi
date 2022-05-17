@@ -6,14 +6,14 @@ import com.codetest.szsrestapi.domain.user.dto.request.LoginReqDto;
 import com.codetest.szsrestapi.domain.user.dto.response.LoginResDto;
 import com.codetest.szsrestapi.domain.user.dto.response.UserInfoDto;
 import com.codetest.szsrestapi.domain.user.entity.User;
+import com.codetest.szsrestapi.domain.user.exception.UserException;
 import com.codetest.szsrestapi.domain.user.repository.RoleRepository;
 import com.codetest.szsrestapi.domain.user.repository.UserRepository;
+import com.codetest.szsrestapi.global.annotation.LoginCheck;
 import com.codetest.szsrestapi.global.config.jwt.JwtTokenProvider;
-import com.codetest.szsrestapi.global.config.response.ResultMessage;
 import com.codetest.szsrestapi.global.util.cipher.AES256Util;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -31,19 +31,17 @@ public class UserService {
     private final JwtTokenProvider jwtTokenProvider;
 
     @Transactional
-    public ResultMessage signup(JoinReqDto requestDto) {
+    public void signup(JoinReqDto requestDto) {
         requestDto.setRole(roleRepository.findByRoles(EnumRole.ROLE_USER).orElseThrow(
-                () -> new IllegalArgumentException("권한 정보를 찾을 수 없습니다")
+                () -> new UserException("권한 정보를 찾을 수 없습니다")
         ));
         requestDto.setEncPassword(passwordEncoder.encode(requestDto.getPassword()));
         requestDto.setEncRegNo(aes256Util.encrypt(requestDto.getRegNo()));
 
         userRepository.save(requestDto.toEntity());
-
-        return ResultMessage.of("회원가입", HttpStatus.OK);
     }
 
-    public ResultMessage login(LoginReqDto requestDto) {
+    public LoginResDto login(LoginReqDto requestDto) {
         User user = userRepository.findByUserId(requestDto.getUserId()).orElseThrow(
                 () -> new IllegalArgumentException("가입되지 않은 ID입니다")
         );
@@ -53,13 +51,14 @@ public class UserService {
 
         String token = jwtTokenProvider.createToken(user.getUserId(), user.getRoles());
 
-        return ResultMessage.of(new LoginResDto(token, "BEARER"), "로그인", HttpStatus.OK);
+        return new LoginResDto(token, "BEARER");
     }
 
-    public ResultMessage whoAmI() {
+    @LoginCheck
+    public UserInfoDto whoAmI() {
         User user = findUserIdFromAuth();
-        UserInfoDto userInfoDto = UserInfoDto.creatDto(user.getUserNo(), user.getUserId(), user.getName(), aes256Util.decrypt(user.getRegNo()));
-        return ResultMessage.of(userInfoDto, "내정보", HttpStatus.OK);
+
+        return UserInfoDto.creatDto(user.getUserNo(), user.getUserId(), user.getName(), aes256Util.decrypt(user.getRegNo()));
     }
 
     public User findUserIdFromAuth() {

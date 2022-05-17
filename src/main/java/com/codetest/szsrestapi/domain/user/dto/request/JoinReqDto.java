@@ -12,19 +12,19 @@ import java.util.Arrays;
 public class JoinReqDto {
 
     @NotEmpty(message = "Please enter your userId")
-    @Size(min = 1, message = "userId should have at least 1 characters")
+    @Size(min = 4, message = "userId should have at least 4 characters")
     private String userId;
 
     @NotEmpty(message = "Please enter your password")
-    @Size(min = 1, message = "password should have at least 1 characters")
+    @Size(min = 4, message = "password should have at least 4 characters")
     private String password;
 
     @NotEmpty(message = "Please enter your name")
-    @Size(min = 1, message = "name should have at least 1 characters")
+    @Size(min = 2, message = "name should have at least 2 characters")
     private String name;
 
     @NotEmpty(message = "Please enter your regNo(ID card number)")
-    @Size(min = 1, message = "regNo(ID card number) should have at least 1 characters")
+    @Size(min = 14, message = "regNo(ID card number) should have at least 14 characters")
     private String regNo;
 
     private Role role;

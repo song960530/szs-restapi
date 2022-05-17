@@ -1,5 +1,6 @@
 package com.codetest.szsrestapi.global.util.cipher;
 
+import com.codetest.szsrestapi.global.error.CipherException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -27,7 +28,7 @@ public class AES256Util {
             keySpec = new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), "AES"); // 비밀키 생성
             ivParamSpec = new IvParameterSpec(iv.getBytes(StandardCharsets.UTF_8));
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new CipherException("AES256 초기화 중 오류 발생");
         }
     }
 
@@ -41,7 +42,7 @@ public class AES256Util {
 
             encString = Base64.getEncoder().encodeToString(encBytes); // 암호화 인코딩 후 저장
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new CipherException("AES256 암호화 중 오류 발생");
         }
         return encString;
     }
@@ -54,7 +55,7 @@ public class AES256Util {
 
             rawString = new String(cipher.doFinal(decBytes));
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new CipherException("AES256 복호화 중 오류 발생");
         }
         return rawString;
     }
