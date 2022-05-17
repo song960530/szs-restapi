@@ -1,6 +1,6 @@
 package com.codetest.szsrestapi.global.util.cipher;
 
-import com.codetest.szsrestapi.global.error.CipherException;
+import com.codetest.szsrestapi.global.exception.CipherException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 

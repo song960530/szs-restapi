@@ -1,4 +1,4 @@
-package com.codetest.szsrestapi.global.error;
+package com.codetest.szsrestapi.global.exception;
 
 import com.codetest.szsrestapi.domain.user.exception.UserException;
 import com.codetest.szsrestapi.global.config.response.ErrorResultMessage;

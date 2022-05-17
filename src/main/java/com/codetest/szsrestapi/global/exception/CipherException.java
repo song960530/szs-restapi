@@ -1,4 +1,4 @@
-package com.codetest.szsrestapi.global.error;
+package com.codetest.szsrestapi.global.exception;
 
 public class CipherException extends RuntimeException{
     public CipherException() {
