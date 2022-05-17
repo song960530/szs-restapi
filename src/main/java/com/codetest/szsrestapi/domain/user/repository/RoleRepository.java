@@ -1,7 +1,7 @@
-package com.codetest.szsrestapi.domain.member.repository;
+package com.codetest.szsrestapi.domain.user.repository;
 
-import com.codetest.szsrestapi.domain.member.EnumRole;
-import com.codetest.szsrestapi.domain.member.entity.Role;
+import com.codetest.szsrestapi.domain.user.EnumRole;
+import com.codetest.szsrestapi.domain.user.entity.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

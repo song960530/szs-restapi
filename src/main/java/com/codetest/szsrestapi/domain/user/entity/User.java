@@ -1,7 +1,6 @@
-package com.codetest.szsrestapi.domain.member.entity;
+package com.codetest.szsrestapi.domain.user.entity;
 
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -13,19 +12,20 @@ import java.util.List;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SequenceGenerator(
-        name = "SEQ_MEMBER_GENERATOR"
-        , sequenceName = "SEQ_MEMBER"
+        name = "SEQ_USER_GENERATOR"
+        , sequenceName = "SEQ_USER"
         , initialValue = 1
         , allocationSize = 1
 )
-public class Member {
+@Table(name = "USERS")
+public class User {
     @Id
-    @Column(name = "MEMBER_NO")
+    @Column(name = "USER_NO")
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE
-            , generator = "SEQ_MEMBER_GENERATOR"
+            , generator = "SEQ_USER_GENERATOR"
     )
-    private Long memberNo;
+    private Long userNo;
 
     @Column(name = "USER_ID")
     private String userId;
@@ -41,13 +41,13 @@ public class Member {
 
     @ManyToMany
     @JoinTable(
-            name = "MEMBER_ROLES"
-            , joinColumns = @JoinColumn(name = "MEMBER_NO")
+            name = "USER_ROLES"
+            , joinColumns = @JoinColumn(name = "USER_NO")
             , inverseJoinColumns = @JoinColumn(name = "ROLE_NO")
     )
     private List<Role> roles = new ArrayList<>();
 
-    public Member(String userId, String password, String name, String regNo, List<Role> roles) {
+    public User(String userId, String password, String name, String regNo, List<Role> roles) {
         this.userId = userId;
         this.password = password;
         this.name = name;

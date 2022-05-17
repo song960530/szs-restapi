@@ -1,6 +1,6 @@
-package com.codetest.szsrestapi.domain.member.entity;
+package com.codetest.szsrestapi.domain.user.entity;
 
-import com.codetest.szsrestapi.domain.member.EnumRole;
+import com.codetest.szsrestapi.domain.user.EnumRole;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,11 +31,11 @@ public class Role {
 
     @ManyToMany
     @JoinTable(
-            name = "MEMBER_ROLES"
+            name = "USER_ROLES"
             , joinColumns = @JoinColumn(name = "ROLE_NO")
-            , inverseJoinColumns = @JoinColumn(name = "MEMBER_NO")
+            , inverseJoinColumns = @JoinColumn(name = "USER_NO")
     )
-    private List<Member> members;
+    private List<User> users;
 
     public Role(EnumRole roles) {
         this.roles = roles;

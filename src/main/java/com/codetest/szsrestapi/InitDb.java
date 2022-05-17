@@ -1,8 +1,8 @@
 package com.codetest.szsrestapi;
 
-import com.codetest.szsrestapi.domain.member.EnumRole;
-import com.codetest.szsrestapi.domain.member.entity.Role;
-import com.codetest.szsrestapi.domain.member.repository.RoleRepository;
+import com.codetest.szsrestapi.domain.user.EnumRole;
+import com.codetest.szsrestapi.domain.user.entity.Role;
+import com.codetest.szsrestapi.domain.user.repository.RoleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;

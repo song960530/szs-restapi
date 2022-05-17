@@ -1,7 +1,7 @@
-package com.codetest.szsrestapi.domain.member.dto.request;
+package com.codetest.szsrestapi.domain.user.dto.request;
 
-import com.codetest.szsrestapi.domain.member.entity.Member;
-import com.codetest.szsrestapi.domain.member.entity.Role;
+import com.codetest.szsrestapi.domain.user.entity.User;
+import com.codetest.szsrestapi.domain.user.entity.Role;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
@@ -9,7 +9,7 @@ import javax.validation.constraints.Size;
 import java.util.Arrays;
 
 @Data
-public class JoinRequestDto {
+public class JoinReqDto {
 
     @NotEmpty(message = "Please enter your userId")
     @Size(min = 1, message = "userId should have at least 1 characters")
@@ -32,7 +32,7 @@ public class JoinRequestDto {
     private String encPassword;
     private String encRegNo;
 
-    public Member toEntity() {
-        return new Member(userId, encPassword, name, encRegNo, Arrays.asList(role));
+    public User toEntity() {
+        return new User(userId, encPassword, name, encRegNo, Arrays.asList(role));
     }
 }

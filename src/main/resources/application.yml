@@ -19,7 +19,8 @@ spring:
 
 config:
   jwt:
-    secretKey: szs-restapi
+    secretKey: szs-apiSecretKey
+    apiKey: szs-apiKey
     validTime: 1800000 # ms
 
 logging.level:
