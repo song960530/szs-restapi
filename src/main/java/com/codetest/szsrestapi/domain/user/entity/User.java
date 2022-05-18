@@ -27,7 +27,7 @@ public class User {
     )
     private Long userNo;
 
-    @Column(name = "USER_ID")
+    @Column(name = "USER_ID", unique = true)
     private String userId;
 
     @Column(name = "PASSWORD")
@@ -36,7 +36,7 @@ public class User {
     @Column(name = "NAME")
     private String name;
 
-    @Column(name = "REG_NO")
+    @Column(name = "REG_NO", unique = true)
     private String regNo;
 
     @ManyToMany

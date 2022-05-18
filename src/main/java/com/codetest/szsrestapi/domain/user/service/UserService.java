@@ -82,6 +82,7 @@ public class UserService {
     }
 
 
+    @LoginCheck
     @Transactional
     public Object scrap() throws ScrapApiException {
         User user = findUserIdFromAuth();
@@ -97,21 +98,25 @@ public class UserService {
         if (body.get("status").equals("fail"))
             throw new ScrapApiException("조회된 정보가 없습니다");
 
-
-        JSONObject object = new JSONObject(apiResponse).getJSONObject("body").getJSONObject("data").getJSONObject("jsonList");
-        JSONObject scrap001 = object.getJSONArray("scrap001").getJSONObject(0);
-        JSONObject scrap002 = object.getJSONArray("scrap002").getJSONObject(0);
-
-        int salary = Integer.parseInt(scrap001.getString("총지급액").replaceAll(",", ""));
-        int useAmount = Integer.parseInt(scrap002.getString("총사용금액").replaceAll(",", ""));
-
-        Scrap scrap = new Scrap(user, salary, useAmount, scrapHistory);
-        scrapRepository.save(scrap);
+        recordScrap(user, apiResponse, scrapHistory);
 
         return body.get("data");
     }
 
-    private ResponseEntity<Object> connScrapApi(User user) {
+    @Transactional
+    public void recordScrap(User user, ResponseEntity<Object> apiResponse, ScrapHistory scrapHistory) {
+        JSONObject object = new JSONObject(apiResponse).getJSONObject("body").getJSONObject("data").getJSONObject("jsonList");
+        JSONObject scrap001 = object.getJSONArray("scrap001").getJSONObject(0);
+        JSONObject scrap002 = object.getJSONArray("scrap002").getJSONObject(0);
+
+        int salary = Integer.parseInt(scrap001.getString("총지급액").replaceAll("[^0-9]", ""));
+        int useAmount = Integer.parseInt(scrap002.getString("총사용금액").replaceAll("[^0-9]", ""));
+
+        Scrap scrap = new Scrap(user, salary, useAmount, scrapHistory);
+        scrapRepository.save(scrap);
+    }
+
+    public ResponseEntity<Object> connScrapApi(User user) {
         return restTemplate.postForEntity(
                 URI.create(scrapProperties.getScrapUrl())
                 , new ScrapReqDto(user.getName(), aes256Util.decrypt(user.getRegNo()))
