@@ -3,41 +3,45 @@ package com.codetest.szsrestapi.domain.user.service;
 import com.codetest.szsrestapi.domain.user.EnumRole;
 import com.codetest.szsrestapi.domain.user.dto.request.JoinReqDto;
 import com.codetest.szsrestapi.domain.user.dto.request.LoginReqDto;
+import com.codetest.szsrestapi.domain.user.dto.request.ScrapReqDto;
 import com.codetest.szsrestapi.domain.user.dto.response.LoginResDto;
 import com.codetest.szsrestapi.domain.user.dto.response.UserInfoDto;
 import com.codetest.szsrestapi.domain.user.entity.User;
+import com.codetest.szsrestapi.domain.user.exception.ScrapApiException;
 import com.codetest.szsrestapi.domain.user.exception.UserException;
 import com.codetest.szsrestapi.domain.user.repository.RoleRepository;
 import com.codetest.szsrestapi.domain.user.repository.UserRepository;
 import com.codetest.szsrestapi.global.annotation.LoginCheck;
 import com.codetest.szsrestapi.global.config.jwt.JwtTokenProvider;
+import com.codetest.szsrestapi.global.config.properties.SzsScrapProperties;
 import com.codetest.szsrestapi.global.util.cipher.AES256Util;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
-import java.util.Map;
+import java.util.LinkedHashMap;
 
 @Slf4j
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class UserService {
-    private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
     private final AES256Util aes256Util;
     private final JwtTokenProvider jwtTokenProvider;
     private final BCryptPasswordEncoder passwordEncoder;
+
     private final RestTemplate restTemplate;
+    private final SzsScrapProperties scrapProperties;
+
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
 
     @Transactional
     public void signup(JoinReqDto requestDto) {
@@ -70,32 +74,23 @@ public class UserService {
         return UserInfoDto.creatDto(user.getUserNo(), user.getUserId(), user.getName(), aes256Util.decrypt(user.getRegNo()));
     }
 
+    public Object scrap() {
+        User user = findUserIdFromAuth();
+
+        ResponseEntity<Object> test = restTemplate.postForEntity(
+                URI.create(scrapProperties.getScrapUrl())
+                , new ScrapReqDto(user.getName(), aes256Util.decrypt(user.getRegNo()))
+                , Object.class
+        );
+
+        if (test.getStatusCode() != HttpStatus.OK)
+            return new ScrapApiException("스크랩 API 조회에 실패하였습니다");
+
+        return ((LinkedHashMap) test.getBody()).get("data");
+    }
+
     public User findUserIdFromAuth() {
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
         return userRepository.findByUserId(userId).orElseThrow(() -> new IllegalArgumentException("가입되지 않은 ID입니다"));
-    }
-
-    public void scrap() {
-//        restTemplate.postForEntity()
-    }
-
-    public URI convertRequestURI(Object request) {
-        UriComponentsBuilder builder = null;
-        MultiValueMap params = new LinkedMultiValueMap<>();
-
-//        if ( request instanceof LmsContent )
-//        {
-//            builder = UriComponentsBuilder.fromHttpUrl(lmsConfig.getContentsUrl());
-//        }
-//        else if ( request instanceof LmsAttendance )
-//        {
-//            builder = UriComponentsBuilder.fromHttpUrl(lmsConfig.getCompletionUrl());
-//        }
-
-        params.setAll(new ObjectMapper().convertValue(request, Map.class));
-        builder.queryParams(params);
-
-        return builder.build()
-                .toUri();
     }
 }

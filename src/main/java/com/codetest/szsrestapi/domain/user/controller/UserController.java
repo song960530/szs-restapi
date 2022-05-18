@@ -46,9 +46,13 @@ public class UserController {
                 , HttpStatus.OK
         );
     }
-    
+
     @PostMapping("/scrap")
-    public void scrap() {
-        memberService.scrap();
+    public ResponseEntity scrap() {
+
+        return new ResponseEntity<>(
+                ResultMessage.of(memberService.scrap(), "동기스크랩", HttpStatus.OK)
+                , HttpStatus.OK
+        );
     }
 }

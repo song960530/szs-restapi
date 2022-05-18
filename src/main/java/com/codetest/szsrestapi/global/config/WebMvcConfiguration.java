@@ -34,12 +34,12 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
         // interceptor를 사용하여 Header에 공통적으로 들어가는 부분들 처리
         List<ClientHttpRequestInterceptor> interceptors = new ArrayList<>();
         interceptors.add(new HeaderRequestInterceptor("Accept", MediaType.APPLICATION_JSON_VALUE));
-        interceptors.add(new HeaderRequestInterceptor("Content-type", MediaType.APPLICATION_JSON_VALUE));
+        interceptors.add(new HeaderRequestInterceptor("ContentType", MediaType.APPLICATION_JSON_VALUE));
 
         // Object 변환을 위한 MessageConverter 설정 추가
         List<HttpMessageConverter<?>> messageConverters = new ArrayList<>();
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
-        converter.setSupportedMediaTypes(Collections.singletonList(MediaType.ALL));
+        converter.setSupportedMediaTypes(Collections.singletonList(MediaType.APPLICATION_JSON));
         messageConverters.add(converter);
 
         return builder.additionalInterceptors(interceptors)

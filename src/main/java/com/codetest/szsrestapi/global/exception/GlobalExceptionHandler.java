@@ -1,5 +1,6 @@
 package com.codetest.szsrestapi.global.exception;
 
+import com.codetest.szsrestapi.domain.user.exception.ScrapApiException;
 import com.codetest.szsrestapi.domain.user.exception.UserException;
 import com.codetest.szsrestapi.global.config.response.ErrorResultMessage;
 import lombok.extern.slf4j.Slf4j;
@@ -38,6 +39,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResultMessage> illegalArgumentException(IllegalArgumentException e) {
         log.error(e.getMessage());
+        e.printStackTrace();
 
         return new ResponseEntity<>(ErrorResultMessage.of(e.getMessage(), HttpStatus.BAD_REQUEST), HttpStatus.BAD_REQUEST);
     }
@@ -58,6 +60,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(CipherException.class)
     public ResponseEntity<ErrorResultMessage> cipherException(CipherException e) {
+        log.error(e.getMessage());
+
+        return new ResponseEntity<>(ErrorResultMessage.of(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(ScrapApiException.class)
+    public ResponseEntity<ErrorResultMessage> scrapApiException(ScrapApiException e) {
         log.error(e.getMessage());
 
         return new ResponseEntity<>(ErrorResultMessage.of(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
