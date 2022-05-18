@@ -12,12 +12,20 @@ import com.codetest.szsrestapi.domain.user.repository.UserRepository;
 import com.codetest.szsrestapi.global.annotation.LoginCheck;
 import com.codetest.szsrestapi.global.config.jwt.JwtTokenProvider;
 import com.codetest.szsrestapi.global.util.cipher.AES256Util;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import java.net.URI;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -26,9 +34,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
-    private final BCryptPasswordEncoder passwordEncoder;
     private final AES256Util aes256Util;
     private final JwtTokenProvider jwtTokenProvider;
+    private final BCryptPasswordEncoder passwordEncoder;
+    private final RestTemplate restTemplate;
 
     @Transactional
     public void signup(JoinReqDto requestDto) {
@@ -64,5 +73,29 @@ public class UserService {
     public User findUserIdFromAuth() {
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
         return userRepository.findByUserId(userId).orElseThrow(() -> new IllegalArgumentException("가입되지 않은 ID입니다"));
+    }
+
+    public void scrap() {
+//        restTemplate.postForEntity()
+    }
+
+    public URI convertRequestURI(Object request) {
+        UriComponentsBuilder builder = null;
+        MultiValueMap params = new LinkedMultiValueMap<>();
+
+//        if ( request instanceof LmsContent )
+//        {
+//            builder = UriComponentsBuilder.fromHttpUrl(lmsConfig.getContentsUrl());
+//        }
+//        else if ( request instanceof LmsAttendance )
+//        {
+//            builder = UriComponentsBuilder.fromHttpUrl(lmsConfig.getCompletionUrl());
+//        }
+
+        params.setAll(new ObjectMapper().convertValue(request, Map.class));
+        builder.queryParams(params);
+
+        return builder.build()
+                .toUri();
     }
 }

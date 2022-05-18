@@ -2,12 +2,12 @@ package com.codetest.szsrestapi.global.config.jwt;
 
 import com.codetest.szsrestapi.domain.user.EnumRole;
 import com.codetest.szsrestapi.domain.user.entity.Role;
+import com.codetest.szsrestapi.global.config.properties.JwtProperties;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -26,20 +26,14 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class JwtTokenProvider {
     private final UserDetailsService userDetailsService;
-
-    @Value("${config.jwt.secretKey}")
-    private String secretKey;
+    private final JwtProperties jwtProperties;
     private String encSecretKey;
-    @Value("${config.jwt.apiKey}")
-    private String apiKey;
-    @Value("${config.jwt.validTime}")
-    private long tokenValidTime;
     private String headerName;
 
 
     @PostConstruct
     protected void init() {
-        encSecretKey = Base64.getEncoder().encodeToString(secretKey.getBytes()); // 초기 secretKey Base64로 encrypt
+        encSecretKey = Base64.getEncoder().encodeToString(jwtProperties.getSecretKey().getBytes()); // 초기 secretKey Base64로 encrypt
         headerName = "Authorization";
     }
 
@@ -53,13 +47,13 @@ public class JwtTokenProvider {
         Claims claims = Jwts.claims().setSubject(userPk); // JWT payload에 저장되는 정보단위
         List<EnumRole> roleList = roles.stream().map(Role::getRoles).collect(Collectors.toList());
         claims.put("roles", roleList);
-        claims.put("apiKey", apiKey);
+        claims.put("apiKey", jwtProperties.getApiKey());
 
         return Jwts.builder()
                 .setHeader(headers) // 헤더 설정
                 .setClaims(claims) // 정보 저장
                 .setIssuedAt(now) // 토큰 발생 시간 정보
-                .setExpiration(new Date(now.getTime() + tokenValidTime)) // 만료시간
+                .setExpiration(new Date(now.getTime() + jwtProperties.getTokenValidTime())) // 만료시간
                 .signWith(SignatureAlgorithm.HS256, encSecretKey) // 암호화 및 encSecretKey 세팅
                 .compact();
     }
@@ -78,7 +72,8 @@ public class JwtTokenProvider {
         String token = request.getHeader(headerName);
 
         if (!StringUtils.hasText(token))
-            throw new IllegalArgumentException("조회된 토큰값이 없습니다");
+            // throw new IllegalArgumentException("조회된 토큰값이 없습니다");
+            return "";
 
         if (!Pattern.matches("^Bearer .*", token))
             throw new IllegalArgumentException("토큰값이 잘못되었습니다");
@@ -96,7 +91,7 @@ public class JwtTokenProvider {
 
             String receiveKey = String.valueOf(claims.get("apiKey"));
 
-            if (!StringUtils.hasText(receiveKey) || !receiveKey.equals(apiKey))
+            if (!StringUtils.hasText(receiveKey) || !receiveKey.equals(jwtProperties.getApiKey()))
                 throw new IllegalArgumentException("정상적인 API 키가 아닙니다");
 
             // 만료됐으면 true, 아니면 false

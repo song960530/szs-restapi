@@ -1,8 +1,9 @@
 package com.codetest.szsrestapi.global.util.cipher;
 
+import com.codetest.szsrestapi.global.config.properties.AES256Properties;
 import com.codetest.szsrestapi.global.exception.CipherException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -14,22 +15,20 @@ import java.util.Base64;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class AES256Util {
     private String algo = "AES/CBC/PKCS5Padding";
-    @Value("${config.cipher.aesKey}")
-    private String key;
-    @Value("${config.cipher.iv}")
-    private String iv;
-    Cipher cipher;
-    SecretKeySpec keySpec;
-    IvParameterSpec ivParamSpec;
+    private Cipher cipher;
+    private SecretKeySpec keySpec;
+    private IvParameterSpec ivParamSpec;
+    private final AES256Properties aes256Properties;
 
     @PostConstruct
     protected void init() {
         try {
             cipher = Cipher.getInstance(algo);
-            keySpec = new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), "AES"); // 비밀키 생성
-            ivParamSpec = new IvParameterSpec(iv.getBytes(StandardCharsets.UTF_8));
+            keySpec = new SecretKeySpec(aes256Properties.getKey().getBytes(StandardCharsets.UTF_8), "AES"); // 비밀키 생성
+            ivParamSpec = new IvParameterSpec(aes256Properties.getIv().getBytes(StandardCharsets.UTF_8));
         } catch (Exception e) {
             throw new CipherException("AES256 초기화 중 오류 발생");
         }

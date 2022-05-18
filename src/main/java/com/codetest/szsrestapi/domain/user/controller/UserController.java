@@ -8,20 +8,18 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/szs")
 public class UserController {
     private final UserService memberService;
 
-    @PostMapping("/szs/signup")
+    @PostMapping("/signup")
     public ResponseEntity<ResultMessage> signup(@Valid @RequestBody JoinReqDto requestDto) {
         memberService.signup(requestDto);
 
@@ -31,7 +29,7 @@ public class UserController {
         );
     }
 
-    @PostMapping("/szs/login")
+    @PostMapping("/login")
     public ResponseEntity<ResultMessage> login(@Valid @RequestBody LoginReqDto requestDto) {
 
         return new ResponseEntity<>(
@@ -40,12 +38,17 @@ public class UserController {
         );
     }
 
-    @GetMapping("/szs/me")
+    @GetMapping("/me")
     public ResponseEntity<ResultMessage> whoAmI() {
 
         return new ResponseEntity<>(
                 ResultMessage.of(memberService.whoAmI(), "내정보", HttpStatus.OK)
                 , HttpStatus.OK
         );
+    }
+    
+    @PostMapping("/scrap")
+    public void scrap() {
+        memberService.scrap();
     }
 }
