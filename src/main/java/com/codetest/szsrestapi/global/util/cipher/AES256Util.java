@@ -2,6 +2,7 @@ package com.codetest.szsrestapi.global.util.cipher;
 
 import com.codetest.szsrestapi.global.exception.CipherException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -15,8 +16,10 @@ import java.util.Base64;
 @Component
 public class AES256Util {
     private String algo = "AES/CBC/PKCS5Padding";
-    private String key = "abcdefghabcdefghabcdefghabcdefgh"; // 32Byte
-    private String iv = "0123456789abcdef"; // 16Byte
+    @Value("${config.cipher.aesKey}")
+    private String key;
+    @Value("${config.cipher.iv}")
+    private String iv;
     Cipher cipher;
     SecretKeySpec keySpec;
     IvParameterSpec ivParamSpec;

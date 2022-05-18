@@ -22,6 +22,10 @@ config:
     secretKey: szs-apiSecretKey
     apiKey: szs-apiKey
     validTime: 1800000 # ms
+  cipher:
+    aesKey: szsrestapisecretszsrestapisecret # 32byte
+    iv: szsrestapisecret # 16byte
+
 
 logging.level:
   org.hibernate.SQL: debug
