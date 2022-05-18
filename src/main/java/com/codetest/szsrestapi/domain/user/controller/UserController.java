@@ -56,4 +56,13 @@ public class UserController {
                 , HttpStatus.OK
         );
     }
+
+    @GetMapping("/refund")
+    public ResponseEntity refund() {
+
+        return new ResponseEntity<>(
+                ResultMessage.of(memberService.refund(), "환급액", HttpStatus.OK)
+                , HttpStatus.OK
+        );
+    }
 }

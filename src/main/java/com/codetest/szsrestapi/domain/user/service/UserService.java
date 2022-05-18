@@ -5,6 +5,7 @@ import com.codetest.szsrestapi.domain.user.dto.request.JoinReqDto;
 import com.codetest.szsrestapi.domain.user.dto.request.LoginReqDto;
 import com.codetest.szsrestapi.domain.user.dto.request.ScrapReqDto;
 import com.codetest.szsrestapi.domain.user.dto.response.LoginResDto;
+import com.codetest.szsrestapi.domain.user.dto.response.RefoundResDto;
 import com.codetest.szsrestapi.domain.user.dto.response.UserInfoDto;
 import com.codetest.szsrestapi.domain.user.entity.Scrap;
 import com.codetest.szsrestapi.domain.user.entity.ScrapHistory;
@@ -133,6 +134,57 @@ public class UserService {
 
     public User findUserIdFromAuth() {
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
-        return userRepository.findByUserId(userId).orElseThrow(() -> new IllegalArgumentException("가입되지 않은 ID입니다"));
+        return userRepository.findByUserId(userId).orElseThrow(
+                () -> new IllegalArgumentException("가입되지 않은 ID입니다")
+        );
     }
+
+    @LoginCheck
+    public RefoundResDto refund() {
+        User user = findUserIdFromAuth();
+
+        ScrapHistory scrapHistory = scrapHistoryRepository.findTopByUser(user).orElseThrow(
+                () -> new IllegalStateException("스크랩을 다시 시도해주세요")
+        );
+
+        Scrap scrap = scrapRepository.findByUserAndScrapHistory(user, scrapHistory).orElseThrow(
+                // TODO: 익셉션 추가하기
+        );
+
+        int limit = 0, deductedAmount = 0, refundAmount = 0; // 한도, 공제액, 환급액
+        int calc = 0; // 계산시 사용할 변수
+        int salary = scrap.getSalary();
+        int useAmount = scrap.getUseAmount();
+
+        if (salary <= 33_000_000) {
+            limit = 740_000;
+        } else if (salary <= 70_000_000) {
+            calc = (int) (740_000 - ((salary - 33_000_000) * 0.008));
+            limit = (calc < 660_000) ? 660_000 : calc;
+        } else {
+            calc = (int) (660_000 - ((salary - 70_000_000) * 0.5));
+            limit = (calc < 500_000) ? 500_000 : calc;
+        }
+
+        if (useAmount <= 1_300_000) {
+            deductedAmount = (int) (useAmount * 0.55);
+        } else {
+            deductedAmount = (int) (715_000 + ((useAmount - 1_300_000) * 0.3));
+        }
+
+        refundAmount = Math.min(limit, deductedAmount);
+
+        return new RefoundResDto(user.getName(), limit, deductedAmount, refundAmount);
+    }
+
+//    private String intToString(int input) {
+//        String[] han1 = {"", "십", "백", "천"};
+//        String[] han2 = {"", "만", "억"};
+//
+//        StringBuilder sb = new StringBuilder();
+//        int calc = input;
+//
+//
+//        return "";
+//    }
 }
