@@ -2,6 +2,7 @@ package com.codetest.szsrestapi.domain.user.controller;
 
 import com.codetest.szsrestapi.domain.user.dto.request.JoinReqDto;
 import com.codetest.szsrestapi.domain.user.dto.request.LoginReqDto;
+import com.codetest.szsrestapi.domain.user.exception.ScrapApiException;
 import com.codetest.szsrestapi.domain.user.service.UserService;
 import com.codetest.szsrestapi.global.config.response.ResultMessage;
 import lombok.RequiredArgsConstructor;
@@ -48,7 +49,7 @@ public class UserController {
     }
 
     @PostMapping("/scrap")
-    public ResponseEntity scrap() {
+    public ResponseEntity scrap() throws ScrapApiException {
 
         return new ResponseEntity<>(
                 ResultMessage.of(memberService.scrap(), "동기스크랩", HttpStatus.OK)

@@ -47,6 +47,12 @@ public class User {
     )
     private List<Role> roles = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<ScrapHistory> scrapHistories = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Scrap> scraps = new ArrayList<>();
+
     public User(String userId, String password, String name, String regNo, List<Role> roles) {
         this.userId = userId;
         this.password = password;
