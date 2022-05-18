@@ -7,10 +7,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class RefoundResDto {
     private String name;
-    private int limit;
-    private int deductedAmount;
-    private int refundAmount;
-//    private String limit;
-//    private String deductedAmount;
-//    private String refundAmount;
+    private String limit;
+    private String deductedAmount;
+    private String refundAmount;
 }

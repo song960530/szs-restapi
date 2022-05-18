@@ -144,17 +144,50 @@ public class UserService {
         User user = findUserIdFromAuth();
 
         ScrapHistory scrapHistory = scrapHistoryRepository.findTopByUser(user).orElseThrow(
-                () -> new IllegalStateException("스크랩을 다시 시도해주세요")
+                () -> new IllegalStateException("스크랩 먼저 시도해주세요")
         );
 
         Scrap scrap = scrapRepository.findByUserAndScrapHistory(user, scrapHistory).orElseThrow(
-                // TODO: 익셉션 추가하기
+                () -> new IllegalStateException("스크랩을 다시 시도해주세요")
         );
 
-        int limit = 0, deductedAmount = 0, refundAmount = 0; // 한도, 공제액, 환급액
-        int calc = 0; // 계산시 사용할 변수
-        int salary = scrap.getSalary();
-        int useAmount = scrap.getUseAmount();
+        int salary = scrap.getSalary(); // 총지급액
+        int useAmount = scrap.getUseAmount(); // 총사용금액
+        int limit = calcLimit(salary); // 한도
+        int deductedAmount = calcDeductedAmount(useAmount); // 공제액
+        int refundAmount = calcRefundAmount(limit, deductedAmount); // 환급액
+
+        return new RefoundResDto(user.getName(), convertMoneyString(limit), convertMoneyString(deductedAmount), convertMoneyString(refundAmount));
+    }
+
+    private int calcRefundAmount(int limit, int deductedAmount) {
+        int refundAmount = 0;
+
+        refundAmount = Math.min(limit, deductedAmount);
+
+        return refundAmount;
+    }
+
+    private int calcDeductedAmount(int useAmount) {
+        int deductedAmount = 0;
+
+        if (useAmount < 0)
+            throw new IllegalArgumentException("총사용금액을 다시 확인해주세요");
+
+        if (useAmount <= 1_300_000) {
+            deductedAmount = (int) (useAmount * 0.55);
+        } else {
+            deductedAmount = (int) (715_000 + ((useAmount - 1_300_000) * 0.3));
+        }
+
+        return deductedAmount;
+    }
+
+    private int calcLimit(int salary) {
+        int calc = 0, limit = 0;
+
+        if (salary < 0)
+            throw new IllegalArgumentException("총지급액을 다시 확인해주세요");
 
         if (salary <= 33_000_000) {
             limit = 740_000;
@@ -166,25 +199,45 @@ public class UserService {
             limit = (calc < 500_000) ? 500_000 : calc;
         }
 
-        if (useAmount <= 1_300_000) {
-            deductedAmount = (int) (useAmount * 0.55);
-        } else {
-            deductedAmount = (int) (715_000 + ((useAmount - 1_300_000) * 0.3));
-        }
-
-        refundAmount = Math.min(limit, deductedAmount);
-
-        return new RefoundResDto(user.getName(), limit, deductedAmount, refundAmount);
+        return limit;
     }
 
-//    private String intToString(int input) {
-//        String[] han1 = {"", "십", "백", "천"};
-//        String[] han2 = {"", "만", "억"};
-//
-//        StringBuilder sb = new StringBuilder();
-//        int calc = input;
-//
-//
-//        return "";
-//    }
+    // TODO: 금액 한글로 변경하는거 수정이 필요함
+    private String convertMoneyString(int input) {
+        String[] han1 = {"", "십", "백", "천"};
+        String[] han2 = {"", "만", "억"};
+
+        StringBuilder sb = new StringBuilder();
+        StringBuilder inputSb = new StringBuilder(String.valueOf(input));
+
+        for (int i = 0; i < inputSb.length(); i++) {
+            String s = String.valueOf(inputSb.charAt(i));
+
+            if (!((inputSb.length() - i) % 4 == 0 && s.equals("0"))) {
+                sb.append(s); // 4자리마다 맨앞이 0이면 무시
+            }
+
+            if ((inputSb.length() - (i + 1)) % 4 == 0) {
+                sb.append(han2[(inputSb.length() - (i + 1)) / 4]); // 만, 억 단위 붙이기
+
+                // 4자리마다 띄우는데 마지막은 안띄움
+                if (inputSb.length() - 1 != i) {
+                    sb.append(" ");
+                }
+            }
+        }
+
+        if (sb.lastIndexOf("000") == sb.length() - 3) {
+            // 마지막이 000으로 떨어지면 "천"으로 변경
+            sb.delete(sb.length() - 3, sb.length());
+            sb.append(han1[3]);
+        } else if (sb.length() == 3 || (String.valueOf(sb.charAt(sb.length() - 4)).equals(" ") && sb.lastIndexOf("00") == sb.length() - 2)) {
+            // 백의자리로 끝나면 "백"으로 변경(천의자리가 있으면 변경하지 않는다) ex) 500 -> 5백, 4500 -> 4500
+            sb.delete(sb.length() - 2, sb.length());
+            sb.append(han1[2]);
+        }
+
+        sb.append("원");
+        return sb.toString();
+    }
 }
