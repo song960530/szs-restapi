@@ -32,7 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
-import java.util.LinkedHashMap;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -85,28 +85,28 @@ public class UserService {
 
     @LoginCheck
     @Transactional
-    public Object scrap() throws ScrapApiException {
+    public Map<String, Object> scrap() throws ScrapApiException {
         User user = findUserIdFromAuth();
 
         ResponseEntity<Object> apiResponse = connScrapApi(user);
-        LinkedHashMap body = (LinkedHashMap) apiResponse.getBody();
+        JSONObject body = new JSONObject(apiResponse).getJSONObject("body");
 
         ScrapHistory scrapHistory = recordScrapHistory(user, apiResponse);
 
         if (apiResponse.getStatusCode() != HttpStatus.OK)
             throw new ScrapApiException("스크랩 API와 통신에 실패하였습니다");
 
-        if (body.get("status").equals("fail"))
+        if (body.getString("status").equals("fail"))
             throw new ScrapApiException("조회된 정보가 없습니다");
 
-        recordScrap(user, apiResponse, scrapHistory);
+        recordScrap(user, body, scrapHistory);
 
-        return body.get("data");
+        return body.getJSONObject("data").toMap();
     }
 
     @Transactional
-    public void recordScrap(User user, ResponseEntity<Object> apiResponse, ScrapHistory scrapHistory) {
-        JSONObject object = new JSONObject(apiResponse).getJSONObject("body").getJSONObject("data").getJSONObject("jsonList");
+    public void recordScrap(User user, JSONObject body, ScrapHistory scrapHistory) {
+        JSONObject object = body.getJSONObject("data").getJSONObject("jsonList");
         JSONObject scrap001 = object.getJSONArray("scrap001").getJSONObject(0);
         JSONObject scrap002 = object.getJSONArray("scrap002").getJSONObject(0);
 
