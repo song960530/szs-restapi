@@ -1,11 +1,11 @@
 package com.codetest.szsrestapi;
 
-import com.codetest.szsrestapi.domain.user.EnumRole;
-import com.codetest.szsrestapi.domain.user.dto.request.JoinReqDto;
-import com.codetest.szsrestapi.domain.user.entity.Role;
-import com.codetest.szsrestapi.domain.user.entity.User;
-import com.codetest.szsrestapi.domain.user.repository.RoleRepository;
-import com.codetest.szsrestapi.domain.user.service.UserService;
+import com.codetest.szsrestapi.api.enums.EnumRole;
+import com.codetest.szsrestapi.api.dto.request.JoinReqDto;
+import com.codetest.szsrestapi.api.entity.Role;
+import com.codetest.szsrestapi.api.entity.User;
+import com.codetest.szsrestapi.api.repository.RoleRepository;
+import com.codetest.szsrestapi.api.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

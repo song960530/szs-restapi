@@ -1,7 +1,7 @@
 package com.codetest.szsrestapi.global.config.security;
 
-import com.codetest.szsrestapi.domain.user.entity.User;
-import com.codetest.szsrestapi.domain.user.repository.UserRepository;
+import com.codetest.szsrestapi.api.entity.User;
+import com.codetest.szsrestapi.api.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

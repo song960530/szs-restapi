@@ -35,12 +35,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 토큰 기반 인증이라 세션을 사용하지 않음
                 .and()
                 .authorizeRequests()
-//                .antMatchers("/szs/scrap").hasRole("USER")
+                .antMatchers("/szs/me").hasRole("USER")
+                .antMatchers("/szs/scrap").hasRole("USER")
+                .antMatchers("/szs/refund").hasRole("USER")
                 .anyRequest().permitAll()
                 .and()
                 // UsernamePasswordAuthenticationFilter 동작 전 Jwt 필터 설정
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
         ;
-
     }
 }

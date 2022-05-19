@@ -1,7 +1,7 @@
 package com.codetest.szsrestapi.global.config.jwt;
 
-import com.codetest.szsrestapi.domain.user.EnumRole;
-import com.codetest.szsrestapi.domain.user.entity.Role;
+import com.codetest.szsrestapi.api.enums.EnumRole;
+import com.codetest.szsrestapi.api.entity.Role;
 import com.codetest.szsrestapi.global.config.properties.JwtProperties;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

@@ -1,7 +1,7 @@
 package com.codetest.szsrestapi.global.exception;
 
-import com.codetest.szsrestapi.domain.user.exception.ScrapApiException;
-import com.codetest.szsrestapi.domain.user.exception.UserException;
+import com.codetest.szsrestapi.api.exception.ScrapApiException;
+import com.codetest.szsrestapi.api.exception.UserException;
 import com.codetest.szsrestapi.global.config.response.ErrorResultMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
