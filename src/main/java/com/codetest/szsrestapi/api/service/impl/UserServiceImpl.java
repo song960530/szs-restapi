@@ -24,6 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -41,6 +43,8 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public User signup(JoinReqDto requestDto) {
+        limitSingup(requestDto); // 임시 회원가입 제한
+
         requestDto.setRole(roleRepository.findByRoles(EnumRole.ROLE_USER).orElseThrow(
                 () -> new UserException("권한 정보를 찾을 수 없습니다")
         ));
@@ -54,6 +58,20 @@ public class UserServiceImpl implements UserService {
             throw new IllegalStateException("이미 가입된 회원입니다");
 
         return userRepository.save(requestDto.toEntity());
+    }
+
+    public void limitSingup(JoinReqDto requestDto) {
+        Map<String, String> group = new HashMap<>();
+        group.put("홍길동", "860824-1655068");
+        group.put("김둘리", "921108-1582816");
+        group.put("마징가", "880601-2455116");
+        group.put("베지터", "910411-1656116");
+        group.put("손오공", "820326-2715702");
+
+        String regNo = group.get(requestDto.getName());
+
+        if (!StringUtils.hasText(regNo) || !regNo.equals(requestDto.getRegNo()))
+            throw new IllegalArgumentException("지정회원 외엔 가입이 불가능합니다");
     }
 
     @Override
