@@ -24,7 +24,7 @@ public class InitDb {
     @PostConstruct
     public void init() {
         initService.roleInit();
-        List<User> users = initService.userInit();
+//        List<User> users = initService.userInit();
     }
 }
 
