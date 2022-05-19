@@ -4,6 +4,8 @@ import lombok.Builder;
 import lombok.Data;
 import org.springframework.http.HttpStatus;
 
+import java.util.HashMap;
+
 @Data
 @Builder
 public class ErrorResultMessage {
@@ -20,6 +22,7 @@ public class ErrorResultMessage {
 
     public final static ErrorResultMessage of(final String message, final HttpStatus status) {
         return ErrorResultMessage.builder()
+                .error(new HashMap<String, String>())
                 .message(message)
                 .status(status.value())
                 .build();

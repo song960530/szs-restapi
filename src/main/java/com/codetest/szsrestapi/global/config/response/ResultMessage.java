@@ -4,6 +4,8 @@ import lombok.Builder;
 import lombok.Data;
 import org.springframework.http.HttpStatus;
 
+import java.util.HashMap;
+
 @Data
 @Builder
 public class ResultMessage {
@@ -20,6 +22,7 @@ public class ResultMessage {
 
     public final static ResultMessage of(final String message, final HttpStatus status) {
         return ResultMessage.builder()
+                .data(new HashMap<String, String>())
                 .message(message)
                 .status(status.value())
                 .build();
