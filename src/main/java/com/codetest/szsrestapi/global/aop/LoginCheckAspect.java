@@ -1,6 +1,7 @@
 package com.codetest.szsrestapi.global.aop;
 
 import com.codetest.szsrestapi.api.entity.UserIp;
+import com.codetest.szsrestapi.api.service.UserService;
 import com.codetest.szsrestapi.api.service.impl.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.annotation.Aspect;
@@ -18,7 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 @Component
 @RequiredArgsConstructor
 public class LoginCheckAspect {
-    private final UserServiceImpl userService;
+    private final UserService userService;
 
     /**
      * @LoginCheck 어노테이션이 있으면 메소드 시작 전에 advice가 적용되도록 포인트컷 적용

@@ -88,10 +88,12 @@ public class UserServiceImpl implements UserService {
         return UserInfoDto.creatDto(user.getUserNo(), user.getUserId(), user.getName(), aes256Util.decrypt(user.getRegNo()));
     }
 
+    @Override
     public UserIp findUserLoginIp(String userId) {
         return userIpRepository.findByUser_UserId(userId).orElse(null);
     }
 
+    @Override
     public String findClientIp(HttpServletRequest request) {
         String ip = request.getHeader("X-FORWARDED-FOR"); // 프록시나 로드 밸런서를 통해 들어왔을 경우 원주소 뽑아내기
 

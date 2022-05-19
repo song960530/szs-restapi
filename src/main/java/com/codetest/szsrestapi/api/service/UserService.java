@@ -5,6 +5,7 @@ import com.codetest.szsrestapi.api.dto.request.LoginReqDto;
 import com.codetest.szsrestapi.api.dto.response.LoginResDto;
 import com.codetest.szsrestapi.api.dto.response.UserInfoDto;
 import com.codetest.szsrestapi.api.entity.User;
+import com.codetest.szsrestapi.api.entity.UserIp;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -14,4 +15,8 @@ public interface UserService {
     public LoginResDto login(LoginReqDto requestDto, HttpServletRequest request);
 
     public UserInfoDto whoAmI();
+
+    public UserIp findUserLoginIp(String userId);
+
+    public String findClientIp(HttpServletRequest request);
 }
