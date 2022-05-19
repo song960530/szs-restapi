@@ -29,16 +29,16 @@ public class Scrap {
     private User user;
 
     @Column(name = "SALARY")
-    private int salary;
+    private double salary;
 
     @Column(name = "USE_AMOUNT")
-    private int useAmount;
+    private double useAmount;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "HISTORY_NO")
     private ScrapHistory scrapHistory;
 
-    public Scrap(User user, int salary, int useAmount, ScrapHistory scrapHistory) {
+    public Scrap(User user, double salary, double useAmount, ScrapHistory scrapHistory) {
         this.user = user;
         this.salary = salary;
         this.useAmount = useAmount;

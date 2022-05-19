@@ -82,13 +82,12 @@ public class UserService {
         return UserInfoDto.creatDto(user.getUserNo(), user.getUserId(), user.getName(), aes256Util.decrypt(user.getRegNo()));
     }
 
-
     @LoginCheck
     @Transactional
     public Map<String, Object> scrap() throws ScrapApiException {
         User user = findUserIdFromAuth();
 
-        ResponseEntity<Object> apiResponse = connScrapApi(user);
+        ResponseEntity<Object> apiResponse = callScrapApi(user);
         JSONObject body = new JSONObject(apiResponse).getJSONObject("body");
 
         ScrapHistory scrapHistory = recordScrapHistory(user, apiResponse);
@@ -109,15 +108,17 @@ public class UserService {
         JSONObject object = body.getJSONObject("data").getJSONObject("jsonList");
         JSONObject scrap001 = object.getJSONArray("scrap001").getJSONObject(0);
         JSONObject scrap002 = object.getJSONArray("scrap002").getJSONObject(0);
+//        int salary = Integer.parseInt(scrap001.getString("총지급액").replaceAll("[^0-9]", ""));
+//        int useAmount = Integer.parseInt(scrap002.getString("총사용금액").replaceAll("[^0-9]", ""));
 
-        int salary = Integer.parseInt(scrap001.getString("총지급액").replaceAll("[^0-9]", ""));
-        int useAmount = Integer.parseInt(scrap002.getString("총사용금액").replaceAll("[^0-9]", ""));
+        double salary = Double.parseDouble(scrap001.getString("총지급액").replaceAll(",", ""));
+        double useAmount = Double.parseDouble(scrap002.getString("총사용금액").replaceAll(",", ""));
 
         Scrap scrap = new Scrap(user, salary, useAmount, scrapHistory);
         scrapRepository.save(scrap);
     }
 
-    public ResponseEntity<Object> connScrapApi(User user) {
+    public ResponseEntity<Object> callScrapApi(User user) {
         return restTemplate.postForEntity(
                 URI.create(scrapProperties.getScrapUrl())
                 , new ScrapReqDto(user.getName(), aes256Util.decrypt(user.getRegNo()))
@@ -151,8 +152,8 @@ public class UserService {
                 () -> new IllegalStateException("스크랩을 다시 시도해주세요")
         );
 
-        int salary = scrap.getSalary(); // 총지급액
-        int useAmount = scrap.getUseAmount(); // 총사용금액
+        double salary = scrap.getSalary(); // 총지급액
+        double useAmount = scrap.getUseAmount(); // 총사용금액
         int limit = calcLimit(salary); // 한도
         int deductedAmount = calcDeductedAmount(useAmount); // 공제액
         int refundAmount = calcRefundAmount(limit, deductedAmount); // 환급액
@@ -168,23 +169,23 @@ public class UserService {
         return refundAmount;
     }
 
-    private int calcDeductedAmount(int useAmount) {
-        int deductedAmount = 0;
+    private int calcDeductedAmount(double useAmount) {
+        double deductedAmount = 0;
 
         if (useAmount < 0)
             throw new IllegalArgumentException("총사용금액을 다시 확인해주세요");
 
         if (useAmount <= 1_300_000) {
-            deductedAmount = (int) (useAmount * 0.55);
+            deductedAmount = (useAmount * 0.55);
         } else {
-            deductedAmount = (int) (715_000 + ((useAmount - 1_300_000) * 0.3));
+            deductedAmount = (715_000 + ((useAmount - 1_300_000) * 0.3));
         }
 
-        return deductedAmount;
+        return (int) deductedAmount;
     }
 
-    private int calcLimit(int salary) {
-        int calc = 0, limit = 0;
+    private int calcLimit(double salary) {
+        double calc = 0, limit = 0;
 
         if (salary < 0)
             throw new IllegalArgumentException("총지급액을 다시 확인해주세요");
@@ -192,14 +193,14 @@ public class UserService {
         if (salary <= 33_000_000) {
             limit = 740_000;
         } else if (salary <= 70_000_000) {
-            calc = (int) (740_000 - ((salary - 33_000_000) * 0.008));
+            calc = (740_000 - ((salary - 33_000_000) * 0.008));
             limit = (calc < 660_000) ? 660_000 : calc;
         } else {
-            calc = (int) (660_000 - ((salary - 70_000_000) * 0.5));
+            calc = (660_000 - ((salary - 70_000_000) * 0.5));
             limit = (calc < 500_000) ? 500_000 : calc;
         }
 
-        return limit;
+        return (int) limit;
     }
 
     // TODO: 금액 한글로 변경하는거 수정이 필요함
@@ -227,7 +228,9 @@ public class UserService {
             }
         }
 
-        if (sb.lastIndexOf("000") == sb.length() - 3) {
+        if (sb.lastIndexOf(" 000") == sb.length() - 4) {
+            sb.delete(sb.length() - 4, sb.length());
+        } else if (sb.lastIndexOf("000") == sb.length() - 3) {
             // 마지막이 000으로 떨어지면 "천"으로 변경
             sb.delete(sb.length() - 3, sb.length());
             sb.append(han1[3]);
