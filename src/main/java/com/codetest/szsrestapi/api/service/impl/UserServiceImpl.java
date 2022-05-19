@@ -47,6 +47,12 @@ public class UserServiceImpl implements UserService {
         requestDto.setEncPassword(passwordEncoder.encode(requestDto.getPassword()));
         requestDto.setEncRegNo(aes256Util.encrypt(requestDto.getRegNo()));
 
+        if (userRepository.existsByUserId(requestDto.getUserId()))
+            throw new IllegalStateException("중복된 ID 입니다");
+
+        if (userRepository.existsByRegNo(requestDto.getEncRegNo()))
+            throw new IllegalStateException("이미 가입된 회원입니다");
+
         return userRepository.save(requestDto.toEntity());
     }
 
