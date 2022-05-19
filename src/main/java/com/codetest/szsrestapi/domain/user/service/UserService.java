@@ -52,14 +52,14 @@ public class UserService {
     private final ScrapHistoryRepository scrapHistoryRepository;
 
     @Transactional
-    public void signup(JoinReqDto requestDto) {
+    public User signup(JoinReqDto requestDto) {
         requestDto.setRole(roleRepository.findByRoles(EnumRole.ROLE_USER).orElseThrow(
                 () -> new UserException("권한 정보를 찾을 수 없습니다")
         ));
         requestDto.setEncPassword(passwordEncoder.encode(requestDto.getPassword()));
         requestDto.setEncRegNo(aes256Util.encrypt(requestDto.getRegNo()));
 
-        userRepository.save(requestDto.toEntity());
+        return userRepository.save(requestDto.toEntity());
     }
 
     public LoginResDto login(LoginReqDto requestDto) {
