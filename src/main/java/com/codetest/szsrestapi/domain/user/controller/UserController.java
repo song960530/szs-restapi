@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @Slf4j
@@ -31,10 +32,10 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ResultMessage> login(@Valid @RequestBody LoginReqDto requestDto) {
+    public ResponseEntity<ResultMessage> login(@Valid @RequestBody LoginReqDto requestDto, HttpServletRequest request) {
 
         return new ResponseEntity<>(
-                ResultMessage.of(memberService.login(requestDto), "로그인", HttpStatus.OK)
+                ResultMessage.of(memberService.login(requestDto, request), "로그인", HttpStatus.OK)
                 , HttpStatus.OK
         );
     }

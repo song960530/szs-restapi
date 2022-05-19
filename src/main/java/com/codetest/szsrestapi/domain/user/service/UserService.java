@@ -10,12 +10,10 @@ import com.codetest.szsrestapi.domain.user.dto.response.UserInfoDto;
 import com.codetest.szsrestapi.domain.user.entity.Scrap;
 import com.codetest.szsrestapi.domain.user.entity.ScrapHistory;
 import com.codetest.szsrestapi.domain.user.entity.User;
+import com.codetest.szsrestapi.domain.user.entity.UserIp;
 import com.codetest.szsrestapi.domain.user.exception.ScrapApiException;
 import com.codetest.szsrestapi.domain.user.exception.UserException;
-import com.codetest.szsrestapi.domain.user.repository.RoleRepository;
-import com.codetest.szsrestapi.domain.user.repository.ScrapHistoryRepository;
-import com.codetest.szsrestapi.domain.user.repository.ScrapRepository;
-import com.codetest.szsrestapi.domain.user.repository.UserRepository;
+import com.codetest.szsrestapi.domain.user.repository.*;
 import com.codetest.szsrestapi.global.annotation.LoginCheck;
 import com.codetest.szsrestapi.global.config.jwt.JwtTokenProvider;
 import com.codetest.szsrestapi.global.config.properties.SzsScrapProperties;
@@ -29,8 +27,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
+import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.util.Map;
 
@@ -49,6 +49,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final ScrapRepository scrapRepository;
+    private final UserIpRepository userIpRepository;
     private final ScrapHistoryRepository scrapHistoryRepository;
 
     @Transactional
@@ -62,7 +63,8 @@ public class UserService {
         return userRepository.save(requestDto.toEntity());
     }
 
-    public LoginResDto login(LoginReqDto requestDto) {
+    @Transactional
+    public LoginResDto login(LoginReqDto requestDto, HttpServletRequest request) {
         User user = userRepository.findByUserId(requestDto.getUserId()).orElseThrow(
                 () -> new IllegalArgumentException("가입되지 않은 ID입니다")
         );
@@ -72,7 +74,34 @@ public class UserService {
 
         String token = jwtTokenProvider.createToken(user.getUserId(), user.getRoles());
 
+        recordUserIp(request, user);
+
         return new LoginResDto(token, "BEARER");
+    }
+
+    @Transactional
+    public void recordUserIp(HttpServletRequest request, User user) {
+        String ip = findClientIp(request);
+
+        UserIp userIp = findUserLoginIp(user.getUserId());
+
+        if (userIp == null) {
+            userIpRepository.save(new UserIp(user, ip));
+        } else {
+            userIp.changeLoginIp(ip);
+        }
+    }
+
+    public UserIp findUserLoginIp(String userId) {
+        return userIpRepository.findByUser_UserId(userId).orElse(null);
+    }
+
+    public String findClientIp(HttpServletRequest request) {
+        String ip = request.getHeader("X-FORWARDED-FOR"); // 프록시나 로드 밸런서를 통해 들어왔을 경우 원주소 뽑아내기
+
+        if (!StringUtils.hasText(ip))
+            ip = request.getRemoteAddr();
+        return ip;
     }
 
     @LoginCheck

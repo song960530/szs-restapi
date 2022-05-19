@@ -7,7 +7,6 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
 @Data
-@AllArgsConstructor
 public class LoginReqDto {
     @NotEmpty(message = "Please enter your userId")
     @Size(min = 1, message = "userId should have at least 1 characters")
