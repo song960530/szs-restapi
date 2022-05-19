@@ -2,20 +2,14 @@ package com.codetest.szsrestapi;
 
 import com.codetest.szsrestapi.domain.user.EnumRole;
 import com.codetest.szsrestapi.domain.user.dto.request.JoinReqDto;
-import com.codetest.szsrestapi.domain.user.dto.request.LoginReqDto;
-import com.codetest.szsrestapi.domain.user.dto.response.LoginResDto;
 import com.codetest.szsrestapi.domain.user.entity.Role;
-import com.codetest.szsrestapi.domain.user.entity.ScrapHistory;
 import com.codetest.szsrestapi.domain.user.entity.User;
 import com.codetest.szsrestapi.domain.user.repository.RoleRepository;
 import com.codetest.szsrestapi.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONObject;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
@@ -31,12 +25,6 @@ public class InitDb {
     public void init() {
         initService.roleInit();
         List<User> users = initService.userInit();
-        List<LoginResDto> loginResDtos = initService.loginInit();
-        initService.scarpInit(users, loginResDtos);
-
-        loginResDtos.forEach(dto -> {
-            log.info(dto.getToken());
-        });
     }
 }
 
@@ -46,7 +34,6 @@ public class InitDb {
 class InitService {
     private final UserService userService;
     private final RoleRepository roleRepository;
-    private final RestTemplate restTemplate;
 
     public void roleInit() {
         Role role1 = new Role(EnumRole.ROLE_GUEST);
@@ -94,29 +81,5 @@ class InitService {
         users.add(userService.signup(joinReqDto5));
 
         return users;
-    }
-
-    public List<LoginResDto> loginInit() {
-        List<LoginResDto> tests = new ArrayList<>();
-
-        tests.add(userService.login(new LoginReqDto("test1", "123456")));
-        tests.add(userService.login(new LoginReqDto("test2", "123456")));
-        tests.add(userService.login(new LoginReqDto("test3", "123456")));
-        tests.add(userService.login(new LoginReqDto("test4", "123456")));
-        tests.add(userService.login(new LoginReqDto("test5", "123456")));
-
-        return tests;
-    }
-
-    public void scarpInit(List<User> users, List<LoginResDto> loginResDtos) {
-        for (int i = 0; i < users.size(); i++) {
-
-            ResponseEntity<Object> apiResponse = userService.callScrapApi(users.get(i));
-            JSONObject body = new JSONObject(apiResponse).getJSONObject("body");
-
-            ScrapHistory scrapHistory = userService.recordScrapHistory(users.get(i), apiResponse);
-
-            userService.recordScrap(users.get(i), body, scrapHistory);
-        }
     }
 }
