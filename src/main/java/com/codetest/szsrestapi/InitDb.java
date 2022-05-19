@@ -5,7 +5,7 @@ import com.codetest.szsrestapi.api.dto.request.JoinReqDto;
 import com.codetest.szsrestapi.api.entity.Role;
 import com.codetest.szsrestapi.api.entity.User;
 import com.codetest.szsrestapi.api.repository.RoleRepository;
-import com.codetest.szsrestapi.api.service.UserService;
+import com.codetest.szsrestapi.api.service.impl.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -32,7 +32,7 @@ public class InitDb {
 @Transactional
 @RequiredArgsConstructor
 class InitService {
-    private final UserService userService;
+    private final UserServiceImpl userService;
     private final RoleRepository roleRepository;
 
     public void roleInit() {
