@@ -108,9 +108,6 @@ public class UserService {
         JSONObject object = body.getJSONObject("data").getJSONObject("jsonList");
         JSONObject scrap001 = object.getJSONArray("scrap001").getJSONObject(0);
         JSONObject scrap002 = object.getJSONArray("scrap002").getJSONObject(0);
-//        int salary = Integer.parseInt(scrap001.getString("총지급액").replaceAll("[^0-9]", ""));
-//        int useAmount = Integer.parseInt(scrap002.getString("총사용금액").replaceAll("[^0-9]", ""));
-
         double salary = Double.parseDouble(scrap001.getString("총지급액").replaceAll(",", ""));
         double useAmount = Double.parseDouble(scrap002.getString("총사용금액").replaceAll(",", ""));
 
@@ -203,7 +200,6 @@ public class UserService {
         return (int) limit;
     }
 
-    // TODO: 금액 한글로 변경하는거 수정이 필요함
     private String convertMoneyString(int input) {
         String[] han1 = {"", "십", "백", "천"};
         String[] han2 = {"", "만", "억"};
