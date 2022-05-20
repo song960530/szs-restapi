@@ -8,6 +8,7 @@ import com.codetest.szsrestapi.api.repository.RoleRepository;
 import com.codetest.szsrestapi.api.service.impl.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +19,7 @@ import java.util.List;
 @Slf4j
 @Component
 @RequiredArgsConstructor
+@Profile({"local"})
 public class InitDb {
     private final InitService initService;
 

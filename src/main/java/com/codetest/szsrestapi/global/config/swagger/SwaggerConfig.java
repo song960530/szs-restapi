@@ -2,6 +2,7 @@ package com.codetest.szsrestapi.global.config.swagger;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -19,6 +20,7 @@ import java.util.List;
 
 @Configuration
 @EnableSwagger2
+@Profile({"local"})
 public class SwaggerConfig {
     private static final String API_NAME = "SZS-RESTAPI";
     private static final String API_VERSION = "0.0.1";
