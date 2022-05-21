@@ -1,0 +1,30 @@
+spring:
+  datasource:
+    url: jdbc:h2:tcp://localhost/~/szs
+    username: szs
+    password:
+    driver-class-name: org.h2.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        # show_sql: true
+        format_sql: true
+        # use_sql_comments: true
+
+config:
+  jwt:
+    secretKey: szs-apiSecretKey
+    apiKey: szs-apiKey
+    validTime: 1800000 # ms
+  cipher:
+    aesKey: szsrestapisecretszsrestapisecret # 32byte
+    iv: szsrestapisecret # 16byte
+  scrap:
+    url: https://codetest.3o3.co.kr/v1/scrap
+
+logging.level:
+  org.hibernate.SQL: debug
+  # org.hibernate.type: trace

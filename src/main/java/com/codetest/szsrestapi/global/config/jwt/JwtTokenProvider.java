@@ -32,7 +32,7 @@ public class JwtTokenProvider {
 
 
     @PostConstruct
-    protected void init() {
+    public void init() {
         encSecretKey = Base64.getEncoder().encodeToString(jwtProperties.getSecretKey().getBytes()); // 초기 secretKey Base64로 encrypt
         headerName = "Authorization";
     }

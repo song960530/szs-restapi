@@ -109,7 +109,7 @@ public class UserServiceImpl implements UserService {
     public UserInfoDto whoAmI() {
         User user = findUserIdFromAuth();
 
-        return UserInfoDto.creatDto(user.getUserNo(), user.getUserId(), user.getName(), aes256Util.decrypt(user.getRegNo()));
+        return new UserInfoDto(user.getUserNo(), user.getUserId(), user.getName(), aes256Util.decrypt(user.getRegNo()));
     }
 
     @Override

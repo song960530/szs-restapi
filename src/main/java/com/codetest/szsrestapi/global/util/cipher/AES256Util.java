@@ -24,7 +24,7 @@ public class AES256Util {
     private final AES256Properties aes256Properties;
 
     @PostConstruct
-    protected void init() {
+    public void init() {
         try {
             cipher = Cipher.getInstance(algo);
             keySpec = new SecretKeySpec(aes256Properties.getKey().getBytes(StandardCharsets.UTF_8), "AES"); // 비밀키 생성

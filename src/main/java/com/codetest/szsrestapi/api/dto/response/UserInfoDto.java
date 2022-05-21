@@ -10,8 +10,4 @@ public class UserInfoDto {
     private String userId;
     private String name;
     private String regNo;
-
-    public static UserInfoDto creatDto(Long userNo, String userId, String name, String regNo) {
-        return new UserInfoDto(userNo, userId, name, regNo);
-    }
 }
