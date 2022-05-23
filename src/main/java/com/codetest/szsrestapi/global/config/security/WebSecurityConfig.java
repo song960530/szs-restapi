@@ -4,7 +4,6 @@ import com.codetest.szsrestapi.global.config.jwt.JwtAuthenticationFilter;
 import com.codetest.szsrestapi.global.config.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -36,9 +35,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 토큰 기반 인증이라 세션을 사용하지 않음
                 .and()
                 .authorizeRequests()
-                .antMatchers("/szs/me").hasRole("USER")
-                .antMatchers("/szs/scrap").hasRole("USER")
-                .antMatchers("/szs/refund").hasRole("USER")
+                .antMatchers("/szs/me", "/szs/scrap", "/szs/refund").hasRole("USER")
                 .anyRequest().permitAll()
                 .and()
                 // UsernamePasswordAuthenticationFilter 동작 전 Jwt 필터 설정

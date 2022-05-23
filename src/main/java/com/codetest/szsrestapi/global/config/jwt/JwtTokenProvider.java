@@ -74,10 +74,10 @@ public class JwtTokenProvider {
             // throw new IllegalArgumentException("조회된 토큰값이 없습니다");
             return "";
 
-        if (!Pattern.matches("^Bearer .*", token))
+        if (!Pattern.matches("^(?i)Bearer .*", token))
             throw new IllegalArgumentException("토큰값이 잘못되었습니다");
 
-        return token.replaceAll("^Bearer( )*", "");
+        return token.replaceAll("^(?i)Bearer( )*", "");
     }
 
     // 토큰의 유효성과 만료일자 확인
