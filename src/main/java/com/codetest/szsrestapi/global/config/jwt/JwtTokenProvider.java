@@ -1,7 +1,7 @@
 package com.codetest.szsrestapi.global.config.jwt;
 
-import com.codetest.szsrestapi.api.enums.EnumRole;
 import com.codetest.szsrestapi.api.entity.Role;
+import com.codetest.szsrestapi.api.enums.EnumRole;
 import com.codetest.szsrestapi.global.config.properties.JwtProperties;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -47,7 +47,6 @@ public class JwtTokenProvider {
         Claims claims = Jwts.claims().setSubject(userPk); // JWT payload에 저장되는 정보단위
         List<EnumRole> roleList = roles.stream().map(Role::getRoles).collect(Collectors.toList());
         claims.put("roles", roleList);
-        claims.put("apiKey", jwtProperties.getApiKey());
 
         return Jwts.builder()
                 .setHeader(headers) // 헤더 설정
@@ -88,11 +87,6 @@ public class JwtTokenProvider {
                     .setSigningKey(encSecretKey)
                     .parseClaimsJws(jwtToken)
                     .getBody();
-
-            String receiveKey = String.valueOf(claims.get("apiKey"));
-
-            if (!StringUtils.hasText(receiveKey) || !receiveKey.equals(jwtProperties.getApiKey()))
-                throw new IllegalArgumentException("정상적인 API 키가 아닙니다");
 
             // 만료됐으면 true, 아니면 false
             if (claims.getExpiration().before(new Date()))

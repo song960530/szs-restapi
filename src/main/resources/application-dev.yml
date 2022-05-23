@@ -17,7 +17,6 @@ spring:
 config:
   jwt:
     secretKey: szs-apiSecretKey
-    apiKey: szs-apiKey
     validTime: 1800000 # ms
   cipher:
     aesKey: szsrestapisecretszsrestapisecret # 32byte

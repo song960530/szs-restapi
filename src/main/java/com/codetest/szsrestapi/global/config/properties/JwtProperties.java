@@ -11,8 +11,6 @@ import org.springframework.context.annotation.Configuration;
 public class JwtProperties {
     @Value("${config.jwt.secretKey}")
     private final String secretKey;
-    @Value("${config.jwt.apiKey}")
-    private final String apiKey;
     @Value("${config.jwt.validTime}")
     private final long tokenValidTime;
 }

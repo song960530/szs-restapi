@@ -58,7 +58,7 @@ class UserServiceImplTest {
     void setUp() {
         aes256Util = new AES256Util(new AES256Properties("szsrestapisecretszsrestapisecret", "szsrestapisecret"));
         aes256Util.init();
-        jwtTokenProvider = new JwtTokenProvider(userDetailsService, new JwtProperties("szs-apiSecretKey", "szs-apiKey", 1800000));
+        jwtTokenProvider = new JwtTokenProvider(userDetailsService, new JwtProperties("szs-apiSecretKey", 1800000));
         jwtTokenProvider.init();
         passwordEncoder = new BCryptPasswordEncoder();
         userService = new UserServiceImpl(aes256Util, jwtTokenProvider, passwordEncoder, userRepository, roleRepository, userIpRepository);
