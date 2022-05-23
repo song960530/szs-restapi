@@ -45,8 +45,7 @@ public class UserController {
 
     @ApiOperation(
             value = "로그인 API"
-            , notes = "로그인 성공 시 Authentication 헤더에 지정할 JWT값을 반환합니다\n" +
-            "로그인 시 요청 클라이언트의 IP를 기록합니다"
+            , notes = "로그인 성공 시 Authentication 헤더에 지정할 JWT값을 반환합니다"
     )
     @PostMapping("/szs/login")
     public ResponseEntity<ResultMessage> login(@Valid @RequestBody LoginReqDto requestDto, @ApiIgnore HttpServletRequest request) {

@@ -22,6 +22,7 @@ public class ErrorResultMessage {
     public final static ErrorResultMessage of(final Object error, final HttpStatus status) {
         return ErrorResultMessage.builder()
                 .error(error)
+                .message("")
                 .status(status.value())
                 .build();
     }

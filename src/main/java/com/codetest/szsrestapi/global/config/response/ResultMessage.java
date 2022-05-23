@@ -22,6 +22,7 @@ public class ResultMessage {
     public final static ResultMessage of(final Object data, final HttpStatus status) {
         return ResultMessage.builder()
                 .data(data)
+                .message("")
                 .status(status.value())
                 .build();
     }
