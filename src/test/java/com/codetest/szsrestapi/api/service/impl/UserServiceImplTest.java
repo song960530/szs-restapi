@@ -19,9 +19,7 @@ import com.codetest.szsrestapi.global.util.cipher.AES256Util;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -38,7 +36,7 @@ import static org.mockito.Mockito.*;
 
 @SpringBootTest
 @ActiveProfiles("dev")
-@ExtendWith(MockitoExtension.class)
+//@ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
     private JwtTokenProvider jwtTokenProvider;
     private BCryptPasswordEncoder passwordEncoder;

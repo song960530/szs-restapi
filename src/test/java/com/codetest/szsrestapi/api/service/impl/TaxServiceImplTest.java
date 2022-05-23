@@ -15,9 +15,7 @@ import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -39,7 +37,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 
 @SpringBootTest
 @ActiveProfiles("dev")
-@ExtendWith(MockitoExtension.class)
+//@ExtendWith(MockitoExtension.class)
 class TaxServiceImplTest {
     private TaxServiceImpl taxService;
     private AES256Util aes256Util;
@@ -394,6 +392,7 @@ class TaxServiceImplTest {
         assertEquals("60만 4백원", taxService.convertMoneyString(600_400));
 
     }
+
     @Test
     @DisplayName("환불액 조회 성공")
     @WithMockUser(username = "test1", password = "123456", roles = {"USER"})
@@ -416,8 +415,8 @@ class TaxServiceImplTest {
         RefoundResDto result = taxService.refund();
         assertEquals("홍길동", result.getName());
         assertEquals("74만원", result.getLimit());
-        assertEquals("92만 5천원",result.getDeductedAmount());
-        assertEquals("74만원",result.getRefundAmount());
+        assertEquals("92만 5천원", result.getDeductedAmount());
+        assertEquals("74만원", result.getRefundAmount());
     }
 
     private String makeResBody() {
