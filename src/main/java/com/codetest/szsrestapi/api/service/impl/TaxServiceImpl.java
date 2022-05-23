@@ -15,8 +15,8 @@ import com.codetest.szsrestapi.global.config.properties.SzsScrapProperties;
 import com.codetest.szsrestapi.global.util.cipher.AES256Util;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONException;
 import org.json.JSONObject;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -47,15 +47,12 @@ public class TaxServiceImpl implements TaxService {
         User user = findUserIdFromAuth();
 
         ResponseEntity<Object> apiResponse = callScrapApi(user);
-        JSONObject body = new JSONObject(apiResponse).getJSONObject("body");
-
         ScrapHistory scrapHistory = recordScrapHistory(user, apiResponse);
 
-        if (apiResponse.getStatusCode() != HttpStatus.OK)
-            throw new ScrapApiException("스크랩 API와 통신에 실패하였습니다");
+        JSONObject body = new JSONObject(apiResponse).getJSONObject("body");
 
         if (body.getString("status").equals("fail"))
-            throw new ScrapApiException("조회된 정보가 없습니다");
+            throw new ScrapApiException(body.getJSONObject("errors").getString("message"));
 
         recordScrap(user, body, scrapHistory);
 
@@ -78,12 +75,18 @@ public class TaxServiceImpl implements TaxService {
     }
 
     @Transactional
-    public void recordScrap(User user, JSONObject body, ScrapHistory scrapHistory) {
-        JSONObject object = body.getJSONObject("data").getJSONObject("jsonList");
-        JSONObject scrap001 = object.getJSONArray("scrap001").getJSONObject(0);
-        JSONObject scrap002 = object.getJSONArray("scrap002").getJSONObject(0);
-        double salary = Double.parseDouble(scrap001.getString("총지급액").replaceAll(",", ""));
-        double useAmount = Double.parseDouble(scrap002.getString("총사용금액").replaceAll(",", ""));
+    public void recordScrap(User user, JSONObject body, ScrapHistory scrapHistory) throws ScrapApiException {
+        double salary = 0, useAmount = 0;
+
+        try {
+            JSONObject object = body.getJSONObject("data").getJSONObject("jsonList");
+            JSONObject scrap001 = object.getJSONArray("scrap001").getJSONObject(0);
+            JSONObject scrap002 = object.getJSONArray("scrap002").getJSONObject(0);
+            salary = Double.parseDouble(scrap001.getString("총지급액").replaceAll(",", ""));
+            useAmount = Double.parseDouble(scrap002.getString("총사용금액").replaceAll(",", ""));
+        } catch (JSONException e) {
+            throw new ScrapApiException("스크랩 데이터 파싱 중 오류가 발생하였습니다");
+        }
 
         Scrap scrap = new Scrap(user, salary, useAmount, scrapHistory);
         scrapRepository.save(scrap);
