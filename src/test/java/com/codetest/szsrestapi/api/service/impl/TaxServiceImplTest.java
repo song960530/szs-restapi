@@ -33,6 +33,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 @SpringBootTest
@@ -202,6 +203,27 @@ class TaxServiceImplTest {
         mockServer.expect(requestTo("https://codetest.3o3.co.kr/v1/scrap"))
                 .andExpect(method(HttpMethod.POST))
                 .andRespond(withSuccess("{\"status\": \"fail\", \"errors\": {\"code\": \"-1\", \"message\": \"요청하신 값은 스크랩 가능유저가 아닙니다\" }}", MediaType.APPLICATION_JSON));
+
+        // then
+        assertThrows(ScrapApiException.class, () -> {
+            taxService.scrap();
+        });
+    }
+
+    @Test
+    @DisplayName("스크랩api 실행 중 알수없는 오류가 발생하였을때 예외처리")
+    @WithMockUser(username = "test1", password = "123456", roles = {"USER"})
+    public void scrapApiFail() throws Exception {
+        // given
+        User user = mock(User.class);
+        when(user.getName()).thenReturn("손오공");
+        when(user.getRegNo()).thenReturn(aes256Util.encrypt("820326-2715702"));
+
+        // when
+        doReturn(Optional.of(user)).when(userRepository).findByUserId(anyString());
+        mockServer.expect(requestTo("https://codetest.3o3.co.kr/v1/scrap"))
+                .andExpect(method(HttpMethod.POST))
+                .andRespond(withStatus(HttpStatus.INTERNAL_SERVER_ERROR));
 
         // then
         assertThrows(ScrapApiException.class, () -> {

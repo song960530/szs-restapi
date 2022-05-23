@@ -21,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
@@ -44,10 +45,18 @@ public class TaxServiceImpl implements TaxService {
     @LoginCheck
     @Transactional
     public Map<String, Object> scrap() throws ScrapApiException {
+        ResponseEntity<Object> apiResponse = null;
+        ScrapHistory scrapHistory = null;
         User user = findUserIdFromAuth();
 
-        ResponseEntity<Object> apiResponse = callScrapApi(user);
-        ScrapHistory scrapHistory = recordScrapHistory(user, apiResponse);
+        try {
+            apiResponse = callScrapApi(user);
+        } catch (HttpStatusCodeException e) {
+            apiResponse = new ResponseEntity<Object>("", e.getStatusCode());
+            throw new ScrapApiException("알수없는 이유로 스크랩통신을 실패하였습니다");
+        } finally {
+            scrapHistory = recordScrapHistory(user, apiResponse);
+        }
 
         JSONObject body = new JSONObject(apiResponse).getJSONObject("body");
 
