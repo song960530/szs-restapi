@@ -1,5 +1,7 @@
 package com.codetest.szsrestapi.api.service.impl;
 
+import com.codetest.szsrestapi.api.dto.response.RefoundResDto;
+import com.codetest.szsrestapi.api.entity.Scrap;
 import com.codetest.szsrestapi.api.entity.ScrapHistory;
 import com.codetest.szsrestapi.api.entity.User;
 import com.codetest.szsrestapi.api.exception.ScrapApiException;
@@ -390,6 +392,32 @@ class TaxServiceImplTest {
 
         // then
         assertEquals("60만 4백원", taxService.convertMoneyString(600_400));
+
+    }
+    @Test
+    @DisplayName("환불액 조회 성공")
+    @WithMockUser(username = "test1", password = "123456", roles = {"USER"})
+    public void successRefund() throws Exception {
+        // given
+        User user = mock(User.class);
+        when(user.getName()).thenReturn("홍길동");
+        ScrapHistory scrapHistory = mock(ScrapHistory.class);
+        Scrap scrap = mock(Scrap.class);
+        when(scrap.getSalary()).thenReturn(24_000_000d);
+        when(scrap.getUseAmount()).thenReturn(2_000_000d);
+
+
+        // when
+        doReturn(Optional.of(user)).when(userRepository).findByUserId(anyString());
+        doReturn(Optional.of(scrapHistory)).when(scrapHistoryRepository).findTopByUser(any(User.class));
+        doReturn(Optional.of(scrap)).when(scrapRepository).findByUserAndScrapHistory(any(User.class), any(ScrapHistory.class));
+
+        // then
+        RefoundResDto result = taxService.refund();
+        assertEquals("홍길동", result.getName());
+        assertEquals("74만원", result.getLimit());
+        assertEquals("92만 5천원",result.getDeductedAmount());
+        assertEquals("74만원",result.getRefundAmount());
     }
 
     private String makeResBody() {
