@@ -35,7 +35,7 @@ public class LoginCheckAspect {
         String clientIp = userService.findClientIp(request);
         UserIp userIp = userService.findUserLoginIp(authentication.getName());
 
-        // 로그인시 IP와 HttpServletRequest IP가 다를경우 동작
+        // 로그인시 저장된 IP와 요청 IP가 다를경우 동작
         if (userIp == null || !userIp.getLoginIp().equals(clientIp))
             throw new IllegalStateException("재로그인 해주세요");
     }

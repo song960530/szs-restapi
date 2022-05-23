@@ -88,7 +88,6 @@ public class JwtTokenProvider {
                     .parseClaimsJws(jwtToken)
                     .getBody();
 
-            // 만료됐으면 true, 아니면 false
             if (claims.getExpiration().before(new Date()))
                 throw new IllegalStateException("만료된 토큰입니다");
 
