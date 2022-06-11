@@ -28,10 +28,6 @@ public class LoginCheckAspect {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
 
-        if (authentication == null || AnonymousAuthenticationToken.class.isAssignableFrom(authentication.getClass())) {
-            throw new IllegalStateException("로그인 정보가 없습니다");
-        }
-
         String clientIp = userService.findClientIp(request);
         UserIp userIp = userService.findUserLoginIp(authentication.getName());
 
