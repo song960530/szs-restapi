@@ -1,7 +1,10 @@
 package com.codetest.szsrestapi.api.controller;
 
+import com.codetest.szsrestapi.api.entity.User;
 import com.codetest.szsrestapi.api.exception.ScrapApiException;
 import com.codetest.szsrestapi.api.service.TaxService;
+import com.codetest.szsrestapi.global.annotation.LoginCheck;
+import com.codetest.szsrestapi.global.annotation.LoginUser;
 import com.codetest.szsrestapi.global.config.response.ResultMessage;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -25,10 +28,11 @@ public class TaxController {
             "Value 입력란 안에 \"BEARER [토큰값]\"을 입력하여 호출"
     )
     @PostMapping("/szs/scrap")
-    public ResponseEntity<ResultMessage> scrap() throws ScrapApiException {
+    @LoginCheck
+    public ResponseEntity<ResultMessage> scrap(@LoginUser User user) throws ScrapApiException {
 
         return new ResponseEntity<>(
-                ResultMessage.of(taxService.scrap(), "동기스크랩", HttpStatus.OK)
+                ResultMessage.of(taxService.scrap(user), "동기스크랩", HttpStatus.OK)
                 , HttpStatus.OK
         );
     }
@@ -40,10 +44,11 @@ public class TaxController {
             "Value 입력란 안에 \"BEARER [토큰값]\"을 입력하여 호출"
     )
     @GetMapping("/szs/refund")
-    public ResponseEntity<ResultMessage> refund() {
+    @LoginCheck
+    public ResponseEntity<ResultMessage> refund(@LoginUser User user) {
 
         return new ResponseEntity<>(
-                ResultMessage.of(taxService.refund(), "환급액", HttpStatus.OK)
+                ResultMessage.of(taxService.refund(user), "환급액", HttpStatus.OK)
                 , HttpStatus.OK
         );
     }

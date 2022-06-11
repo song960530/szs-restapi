@@ -14,7 +14,7 @@ public interface UserService {
 
     public LoginResDto login(LoginReqDto requestDto, HttpServletRequest request);
 
-    public UserInfoDto whoAmI();
+    public UserInfoDto whoAmI(User user);
 
     public UserIp findUserLoginIp(String userId);
 

@@ -2,7 +2,10 @@ package com.codetest.szsrestapi.api.controller;
 
 import com.codetest.szsrestapi.api.dto.request.JoinReqDto;
 import com.codetest.szsrestapi.api.dto.request.LoginReqDto;
+import com.codetest.szsrestapi.api.entity.User;
 import com.codetest.szsrestapi.api.service.UserService;
+import com.codetest.szsrestapi.global.annotation.LoginCheck;
+import com.codetest.szsrestapi.global.annotation.LoginUser;
 import com.codetest.szsrestapi.global.config.response.ResultMessage;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -63,10 +66,11 @@ public class UserController {
             "Value 입력란 안에 \"BEARER [토큰값]\"을 입력하여 호출"
     )
     @GetMapping("/szs/me")
-    public ResponseEntity<ResultMessage> whoAmI() {
+    @LoginCheck
+    public ResponseEntity<ResultMessage> whoAmI(@LoginUser User user) {
 
         return new ResponseEntity<>(
-                ResultMessage.of(memberService.whoAmI(), "내정보", HttpStatus.OK)
+                ResultMessage.of(memberService.whoAmI(user), "내정보", HttpStatus.OK)
                 , HttpStatus.OK
         );
     }

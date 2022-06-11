@@ -10,7 +10,6 @@ import com.codetest.szsrestapi.api.repository.ScrapHistoryRepository;
 import com.codetest.szsrestapi.api.repository.ScrapRepository;
 import com.codetest.szsrestapi.api.repository.UserRepository;
 import com.codetest.szsrestapi.api.service.TaxService;
-import com.codetest.szsrestapi.global.annotation.LoginCheck;
 import com.codetest.szsrestapi.global.config.properties.SzsScrapProperties;
 import com.codetest.szsrestapi.global.util.cipher.AES256Util;
 import lombok.RequiredArgsConstructor;
@@ -42,12 +41,10 @@ public class TaxServiceImpl implements TaxService {
     private final ScrapHistoryRepository scrapHistoryRepository;
 
     @Override
-    @LoginCheck
     @Transactional
-    public Map<String, Object> scrap() throws ScrapApiException {
+    public Map<String, Object> scrap(User user) throws ScrapApiException {
         ResponseEntity<Object> apiResponse = null;
         ScrapHistory scrapHistory = null;
-        User user = findUserIdFromAuth();
 
         try {
             apiResponse = callScrapApi(user);
@@ -102,10 +99,7 @@ public class TaxServiceImpl implements TaxService {
     }
 
     @Override
-    @LoginCheck
-    public RefoundResDto refund() {
-        User user = findUserIdFromAuth();
-
+    public RefoundResDto refund(User user) {
         ScrapHistory scrapHistory = scrapHistoryRepository.findTopByUser(user).orElseThrow(
                 () -> new IllegalStateException("스크랩 먼저 시도해주세요")
         );

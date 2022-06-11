@@ -12,12 +12,10 @@ import com.codetest.szsrestapi.api.repository.RoleRepository;
 import com.codetest.szsrestapi.api.repository.UserIpRepository;
 import com.codetest.szsrestapi.api.repository.UserRepository;
 import com.codetest.szsrestapi.api.service.UserService;
-import com.codetest.szsrestapi.global.annotation.LoginCheck;
 import com.codetest.szsrestapi.global.config.jwt.JwtTokenProvider;
 import com.codetest.szsrestapi.global.util.cipher.AES256Util;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -105,10 +103,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @LoginCheck
-    public UserInfoDto whoAmI() {
-        User user = findUserIdFromAuth();
-
+    public UserInfoDto whoAmI(User user) {
         return new UserInfoDto(user.getUserNo(), user.getUserId(), user.getName(), aes256Util.decrypt(user.getRegNo()));
     }
 
@@ -124,12 +119,5 @@ public class UserServiceImpl implements UserService {
         if (!StringUtils.hasText(ip))
             ip = request.getRemoteAddr();
         return ip;
-    }
-
-    public User findUserIdFromAuth() {
-        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
-        return userRepository.findByUserId(userId).orElseThrow(
-                () -> new IllegalArgumentException("가입되지 않은 ID입니다")
-        );
     }
 }
