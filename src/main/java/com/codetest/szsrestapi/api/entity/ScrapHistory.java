@@ -35,7 +35,7 @@ public class ScrapHistory {
     @Column(name = "RESPONSE")
     private String response;
 
-    @OneToOne(mappedBy = "scrapHistory", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "scrapHistory", fetch = FetchType.LAZY)
     private Scrap scrap;
 
     public ScrapHistory(User user, String status, String response) {

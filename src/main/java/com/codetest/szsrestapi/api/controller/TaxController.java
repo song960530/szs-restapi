@@ -1,5 +1,6 @@
 package com.codetest.szsrestapi.api.controller;
 
+import com.codetest.szsrestapi.api.entity.ScrapHistory;
 import com.codetest.szsrestapi.api.entity.User;
 import com.codetest.szsrestapi.api.exception.ScrapApiException;
 import com.codetest.szsrestapi.api.service.TaxService;
@@ -30,10 +31,16 @@ public class TaxController {
     )
     @PostMapping("/szs/scrap")
     @LoginCheck
-    public ResponseEntity<ResultMessage> scrap(@ApiIgnore @LoginUser User user) throws ScrapApiException {
+    public ResponseEntity<ResultMessage> scrap(@ApiIgnore @LoginUser User user) {
+
+        ResponseEntity<Object> apiResponse = taxService.callScrapApi(user);
+        ScrapHistory scrapHistory = taxService.recordScrapHistory(user, apiResponse);
+
+        if (!apiResponse.getStatusCode().is2xxSuccessful())
+            throw new ScrapApiException("알수없는 이유로 스크랩통신을 실패하였습니다");
 
         return new ResponseEntity<>(
-                ResultMessage.of(taxService.scrap(user), "동기스크랩", HttpStatus.OK)
+                ResultMessage.of(taxService.scrap(user, apiResponse, scrapHistory), "동기스크랩", HttpStatus.OK)
                 , HttpStatus.OK
         );
     }

@@ -34,7 +34,7 @@ public class Scrap {
     @Column(name = "USE_AMOUNT")
     private double useAmount;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "HISTORY_NO")
     private ScrapHistory scrapHistory;
 

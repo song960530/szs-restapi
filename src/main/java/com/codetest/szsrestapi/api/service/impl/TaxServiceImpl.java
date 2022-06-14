@@ -19,6 +19,7 @@ import org.json.JSONObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
@@ -42,19 +43,7 @@ public class TaxServiceImpl implements TaxService {
 
     @Override
     @Transactional
-    public Map<String, Object> scrap(User user) throws ScrapApiException {
-        ResponseEntity<Object> apiResponse = null;
-        ScrapHistory scrapHistory = null;
-
-        try {
-            apiResponse = callScrapApi(user);
-        } catch (HttpStatusCodeException e) {
-            apiResponse = new ResponseEntity<Object>("", e.getStatusCode());
-            throw new ScrapApiException("알수없는 이유로 스크랩통신을 실패하였습니다");
-        } finally {
-            scrapHistory = recordScrapHistory(user, apiResponse);
-        }
-
+    public Map<String, Object> scrap(User user, ResponseEntity<Object> apiResponse, ScrapHistory scrapHistory) {
         JSONObject body = new JSONObject(apiResponse).getJSONObject("body");
 
         if (body.getString("status").equals("fail"))
@@ -65,14 +54,24 @@ public class TaxServiceImpl implements TaxService {
         return body.getJSONObject("data").toMap();
     }
 
+    @Override
+    @Transactional(propagation = Propagation.NEVER)
     public ResponseEntity<Object> callScrapApi(User user) {
-        return restTemplate.postForEntity(
-                URI.create(scrapProperties.getScrapUrl())
-                , new ScrapReqDto(user.getName(), aes256Util.decrypt(user.getRegNo()))
-                , Object.class
-        );
+        ResponseEntity<Object> apiResponse;
+
+        try {
+            apiResponse = restTemplate.postForEntity(
+                    URI.create(scrapProperties.getScrapUrl())
+                    , new ScrapReqDto(user.getName(), aes256Util.decrypt(user.getRegNo()))
+                    , Object.class);
+        } catch (HttpStatusCodeException e) {
+            apiResponse = new ResponseEntity<Object>("", e.getStatusCode());
+        }
+
+        return apiResponse;
     }
 
+    @Override
     @Transactional
     public ScrapHistory recordScrapHistory(User user, ResponseEntity<Object> apiResponse) {
         ScrapHistory scrapHistory = new ScrapHistory(user, apiResponse.getStatusCode().toString(), apiResponse.getBody().toString());
@@ -81,7 +80,7 @@ public class TaxServiceImpl implements TaxService {
     }
 
     @Transactional
-    public void recordScrap(User user, JSONObject body, ScrapHistory scrapHistory) throws ScrapApiException {
+    public void recordScrap(User user, JSONObject body, ScrapHistory scrapHistory) {
         double salary = 0, useAmount = 0;
 
         try {
