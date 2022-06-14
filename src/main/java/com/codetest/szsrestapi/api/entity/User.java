@@ -53,6 +53,9 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Scrap> scraps = new ArrayList<>();
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private UserIp userIp;
+
     public User(String userId, String password, String name, String regNo, List<Role> roles) {
         this.userId = userId;
         this.password = password;

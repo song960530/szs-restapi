@@ -93,7 +93,7 @@ public class UserServiceImpl implements UserService {
     public void recordUserIp(HttpServletRequest request, User user) {
         String ip = findClientIp(request);
 
-        UserIp userIp = findUserLoginIp(user.getUserId());
+        UserIp userIp = user.getUserIp();
 
         if (userIp == null) {
             userIpRepository.save(new UserIp(user, ip));
