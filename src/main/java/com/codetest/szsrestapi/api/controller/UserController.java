@@ -67,7 +67,7 @@ public class UserController {
     )
     @GetMapping("/szs/me")
     @LoginCheck
-    public ResponseEntity<ResultMessage> whoAmI(@LoginUser User user) {
+    public ResponseEntity<ResultMessage> whoAmI(@ApiIgnore @LoginUser User user) {
 
         return new ResponseEntity<>(
                 ResultMessage.of(memberService.whoAmI(user), "내정보", HttpStatus.OK)

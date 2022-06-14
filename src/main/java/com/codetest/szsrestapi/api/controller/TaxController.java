@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
+import springfox.documentation.annotations.ApiIgnore;
 
 @Slf4j
 @RestController
@@ -29,7 +30,7 @@ public class TaxController {
     )
     @PostMapping("/szs/scrap")
     @LoginCheck
-    public ResponseEntity<ResultMessage> scrap(@LoginUser User user) throws ScrapApiException {
+    public ResponseEntity<ResultMessage> scrap(@ApiIgnore @LoginUser User user) throws ScrapApiException {
 
         return new ResponseEntity<>(
                 ResultMessage.of(taxService.scrap(user), "동기스크랩", HttpStatus.OK)
@@ -45,7 +46,7 @@ public class TaxController {
     )
     @GetMapping("/szs/refund")
     @LoginCheck
-    public ResponseEntity<ResultMessage> refund(@LoginUser User user) {
+    public ResponseEntity<ResultMessage> refund(@ApiIgnore @LoginUser User user) {
 
         return new ResponseEntity<>(
                 ResultMessage.of(taxService.refund(user), "환급액", HttpStatus.OK)
